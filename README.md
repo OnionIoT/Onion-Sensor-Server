@@ -1,2 +1,2 @@
-# Onion-Sensor-Server
-A web service that collects sensor data from Omega devices using the Onion Cloud
+## Omega-Cloud-Demo
+Pulls temperature data from registered Omega devices, and serves them webapp style.

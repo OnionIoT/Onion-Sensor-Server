@@ -1,0 +1,12 @@
+[
+	{
+		"id"			: "5e096be7-da1a-45b2-9368-2a943eb1d39a",
+		"sensorRead"	: 
+			{
+				"command"	: "exec",
+				"params"	: ""
+			},
+		"name"			: "",
+		"location"		: ""
+	}
+]
