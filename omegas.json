@@ -4,10 +4,13 @@
 		"apiKey"			: "xJMyCgh5lH3oZxTOFleiX14qxt8mXUaajTbM2edakQm8Q8dqe5LudM8GlLxGL6u0",
 		"sensorCommand"	: 
 			{
-				"command"	: "ls",
-				"params"	: "-a"
+				"command"	: "echo",
+				"params"	: [
+					"hello"
+				],
+				"env"		: ""
 			},
-		"displayName"		: "A",
+		"displayName"		: "Correct data",
 		"location"		: ""
 
 	}, {
@@ -19,7 +22,7 @@
 				"command"	: "ls",
 				"params"	: "-a"
 			},
-		"displayName"		: "B",
+		"displayName"		: "Wrong deviceId",
 		"location"		: ""
 	}, {
 
@@ -30,7 +33,7 @@
 				"command"	: "ls",
 				"params"	: "-a"
 			},
-		"displayName"		: "B",
+		"displayName"		: "Wrong apiKey",
 		"location"		: ""
 	}
 ]
