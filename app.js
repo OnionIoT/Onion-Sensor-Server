@@ -51,9 +51,51 @@ function buildRPC (omega, secret)
 }*/
 
 
+omegaList = JSON.parse (fs.readFileSync (omegaDbFile));
+temperatureReadings = [];
+
+//	console.log (omegaList[0]);
+for (i = 0 ; i = omegaList.length ; i++)
+{
+	options = buildRPC (omegaList[i]);
+	console.log (options);
+
+	body = JSON.stringify({ 
+		"command"	: omegaList[i].sensorCommand.command,
+		"params"	: omegaList[i].sensorCommand.params
+	});
+
+	
+
+	req = https.request (options, (res) => {
+		console.log ('called back');
+		let rawData = '';
+		let parsedData = '';
+		res.on ('data', (chunk) => rawData += chunk);
+		res.on ('end', () => {
+			console.log ('req ended');
+			try {
+				parsedData += JSON.parse(rawData);
+				temperatureReadings.push (parsedData);
+				console.log (rawData);
+				console.log (parsedData);
+			} catch (e) {
+				console.log (e.message);
+			}
+			req.end();
+		});
+	}).on ('error', (e) => {
+		console.log (`HTTPS request error: ${e.message}`);
+	});
+
+	req.write(body);
+	console.log('wrote' + body);
+	req.end();
+	console.log('request ended');
+}
 
 app.get('/', function (req, res) {
-	res.send(:q)
+	res.send('pages/dash.html');
 });
 
 app.listen(3000, function () {
