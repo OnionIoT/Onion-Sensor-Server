@@ -4,6 +4,7 @@ const fs		= require('fs');
 var onionRestHostname 	= 'api.onion.io';
 	omegaDbFile = 'omegas.json';
 	secrtDbFile = 'secrets.json';
+	tempDataList = [];
 
 
 
@@ -24,7 +25,7 @@ function buildRPC (omega)
 
 	};
 
-	console.log(options);
+	console.log('RPC built');
 	return options;
 }
 
@@ -32,51 +33,54 @@ function buildRPC (omega)
 function getCloudDataz()
 {
 	omegaList = JSON.parse (fs.readFileSync (omegaDbFile));
-	temperatureReadings = [];
 
-	console.log ('length = ' + omegaList.length);
+//	console.log ('length = ' + omegaList.length);
+
 	for (i = 0 ; i < omegaList.length ; i++)
 	{
-		console.log("looping " + i);
+//		console.log("looping " + i);
 		options = buildRPC (omegaList[i]);
 
 		body = JSON.stringify({ 
 			"command"	: omegaList[i].sensorCommand.command,
 			"params"	: omegaList[i].sensorCommand.params
 		});
-
+		
+		// adding an element to temperature list for each device, matched by device ID
+		let d = {};
+			d.deviceId = omegaList[i].deviceId;
+		tempDataList.push (d);
 		
 
 		req = https.request (options, (res) => {
-			console.log ('called back');
+//			console.log ('request ' + i + ' called back');
 			let rawData = '';
-			let parsedData = '';
+			let tempDataJson = '';
 			res.on ('data', (chunk) => rawData += chunk);
 			res.on ('end', () => {
-				console.log ('req ended');
+				console.log ('response ended');
 				try {
 					parsedData += JSON.parse(rawData);
-					temperatureReadings.push (parsedData);
-					console.log (rawData);
-					console.log (parsedData);
+					// FUTURE: potentially handle error here - right now sends the error message to user	
+					// flag maybe?
+					tempDataList[i].data = parsedData.message;
+
+					//console.log (rawData);
+					//console.log (parsedData);
 				} catch (e) {
-					console.log (e.message);
+					console.log ('no data ' + e.message);
 				}
-				req.end();
+
 			});
 		}).on ('error', (e) => {
-			if (e.statusCode == 400)
-			{
-				
+			console.log('request ERROR ' + e.message);
 		});
 
 		req.write(body);
-		console.log('wrote' + body);
+		console.log('request wrote' + body);
 		req.end();
 		console.log('request ended');
 	}
-	
-	console.log(temperatureReadings);
 }
-
+// TODO fix the stupid func name and migrate to app.js
 getCloudDataz();
