@@ -5,25 +5,24 @@
 		"sensorCommand"	: 
 			{
 				"command"	: "echo",
-				"params"	: [
-					"hello"
-				],
+				"params"	: [ "hello" ],
 				"env"		: ""
 			},
 		"displayName"		: "Correct data",
-		"location"		: ""
+		"devicedeviceLocation"		: ""
 
 	}, {
 
-		"deviceId"			: "5e096be7-da1a-45b2-9368-2a943eb1d39a",
+		"deviceId"			: "696969e7-da1a-45b2-9368-2a943eb1d39a",
 		"apiKey"			: "xJMyCgh5lH3oZxTOFleiX14qxt8mXUaajTbM2edakQm8Q8dqe5LudM8GlLxGL6u0",
 		"sensorCommand"	: 
 			{
 				"command"	: "ls",
-				"params"	: "-a"
+				"params"	: [ "-l" ],
+				"env"		: ""
 			},
 		"displayName"		: "Wrong deviceId",
-		"location"		: ""
+		"deviceLocation"		: ""
 	}, {
 
 		"deviceId"			: "ef006c31-1c0e-4603-9120-2f3acf77969a",
@@ -31,9 +30,10 @@
 		"sensorCommand"	: 
 			{
 				"command"	: "ls",
-				"params"	: "-a"
+				"params"	: "-a",
+				"env"		: ""
 			},
 		"displayName"		: "Wrong apiKey",
-		"location"		: ""
+		"deviceLocation"		: ""
 	}
 ]
