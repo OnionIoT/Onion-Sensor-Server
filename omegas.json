@@ -1,5 +1,5 @@
-{
-	"1c0b6906-2740-45af-ae6b-5162404814c7": {
+[
+	{
 		"deviceId"			: "1c0b6906-2740-45af-ae6b-5162404814c7",
 		"apiKey"			: "ohNIlmHhxbYpgxTyMhNh7gET9244NfuaiXTAh2dR5lczwiP6cOM17deJgnTCTmWF",
 		"sensorCommand"	: 
@@ -8,12 +8,11 @@
 				"params"	: [ "hello" ]
 			},
 		"displayName"		: "Omega with correct data",
-		"devicedeviceLocation"		: ""
+		"deviceLocation"		: ""
 
 	}, 
 
-	"696969e7-da1a-45b2-9368-2a943eb1d39a": {
-
+	{
 		"deviceId"			: "696969e7-da1a-45b2-9368-2a943eb1d39a",
 		"apiKey"			: "ohNIlmHhxbYpgxTyMhNh7gET9244NfuaiXTAh2dR5lczwiP6cOM17deJgnTCTmWF",
 		"sensorCommand"	: 
@@ -26,8 +25,7 @@
 		"deviceLocation"		: ""
 	}, 
 
-	"xxx06c31-1c0e-4603-9120-2f3acf77969a":	{
-
+	{
 		"deviceId"			: "xxx06c31-1c0e-4603-9120-2f3acf77969a",
 		"apiKey"			: "xJMyCgh5lH3oZxTOFleiX14qxtKEEEEEEEEEYedakQm8Q8dqe5LudM8GlLxGL6u0",
 		"sensorCommand"	: 
@@ -39,4 +37,4 @@
 		"displayName"		: "Omega with wrong apiKey",
 		"deviceLocation"		: ""
 	}
-}
+]

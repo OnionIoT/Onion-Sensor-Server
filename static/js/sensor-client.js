@@ -11,7 +11,7 @@ function renderOmegaList() {
 	omegaIdList = Object.keys(omegaDataList);
 
 	for (i = 0 ; i < omegaIdList.length ; i++)
-	{
+	{// TODO check for undefined, don't update it if so, change to use foreach
 		currDevice = omegaDataList[omegaIdList[i]];
 		console.log(currDevice.displayName);
 		console.log(currDevice.message);
