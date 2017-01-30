@@ -9,9 +9,9 @@ var app					= express();
 // Initialise variables for api handling
 var onionRestHostname 	= 'api.onion.io';
 	omegaDbFile = 'omegas.json';
-	omegaDataList = [];
-	omegaList = [];
-	safeOmegaList = [];
+	omegaDataList = {};
+	omegaList = {};
+	safeOmegaList = {};
 	updateFlag = 0;
 
 const EventEmitter = require('events');
@@ -33,16 +33,14 @@ omegaUpdateResponse.on ('failure', (deviceId, data) => {
 // Checks for existing omega to update, does nothing if no omega found with given ID
 function updateOmega (deviceId, message, statusCode)
 {
-	for (i = 0 ; i < omegaDataList.length ; i++) 
-	{
-		// check if existing device
-		if (omegaDataList[i].deviceId == deviceId) {
-			omegaDataList[i].statusCode = statusCode;
-			omegaDataList[i].message = message;
-			console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + message);
-			return;
-		} 
-	}
+	// check if existing device
+	
+	if (omegaDataList[deviceId] != undefined) {
+		omegaDataList[deviceId].statusCode = statusCode;
+		omegaDataList[deviceId].message = message;
+		console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + omegaDataList[deviceId].message);
+		return;
+	} 
 }
 
 // for future use
@@ -96,21 +94,32 @@ function onionCloudDevRequest (omega, ep)
 		});
 }
 
+// Goes through the list of known Omegas and updates each one
 function omegaTempUpdate()
 {
 	omegaDataList = JSON.parse (fs.readFileSync (omegaDbFile));
+	console.log (omegaDataList);
 
-	for (i = 0 ; i < omegaDataList.length ; i++)
+	omegaIdList = Object.keys(omegaDataList);
+	console.log (omegaIdList);
+	
+	listSize = omegaIdList.length;
+	console.log (listSize);
+
+	for (i = 0 ; i < listSize ; i++)
 	{
-//		console.log("looping " + i);
-		safeOmegaList[i] = omegaDataList[i];
-		safeOmegaList[i].apiKey = '';
+		currDevice = omegaIdList [i];
+
+//		safeOmegaList[currDevice] = omegaDataList[currDevice];
+//		safeOmegaList[currDevice].apiKey = '';
 		body = JSON.stringify({ 
-			"command"	: omegaDataList[i].sensorCommand.command,
-			"params"	: omegaDataList[i].sensorCommand.params
+			"command"	: omegaDataList[currDevice].sensorCommand.command,
+			"params"	: omegaDataList[currDevice].sensorCommand.params
 		});
 
-		req = onionCloudDevRequest (omegaDataList[i], '/file/exec');
+		req = onionCloudDevRequest (omegaDataList[currDevice], '/file/exec');
+
+		console.log(req.getHeader('X-API-KEY'));
 
 		req.write(body);
 		console.log('request wrote' + body);
@@ -126,7 +135,7 @@ function omegaTempUpdate()
 app.use (express.static('static'));
 
 app.get('/data', function (req, res) {
-	res.json(omegaTempUpdate());
+	res.json(omegaDataList);
 });
 
 app.get('/', function (req, res) {

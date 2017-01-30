@@ -1,31 +1,34 @@
-[
-	{
-		"deviceId"			: "ef006c31-1c0e-4603-9120-2f3acf77969a",
-		"apiKey"			: "xJMyCgh5lH3oZxTOFleiX14qxt8mXUaajTbM2edakQm8Q8dqe5LudM8GlLxGL6u0",
+{
+	"1c0b6906-2740-45af-ae6b-5162404814c7": {
+		"deviceId"			: "1c0b6906-2740-45af-ae6b-5162404814c7",
+		"apiKey"			: "ohNIlmHhxbYpgxTyMhNh7gET9244NfuaiXTAh2dR5lczwiP6cOM17deJgnTCTmWF",
 		"sensorCommand"	: 
 			{
 				"command"	: "echo",
-				"params"	: [ "hello" ],
-				"env"		: ""
+				"params"	: [ "hello" ]
 			},
-		"displayName"		: "Correct data",
+		"displayName"		: "Omega with correct data",
 		"devicedeviceLocation"		: ""
 
-	}, {
+	}, 
+
+	"696969e7-da1a-45b2-9368-2a943eb1d39a": {
 
 		"deviceId"			: "696969e7-da1a-45b2-9368-2a943eb1d39a",
-		"apiKey"			: "xJMyCgh5lH3oZxTOFleiX14qxt8mXUaajTbM2edakQm8Q8dqe5LudM8GlLxGL6u0",
+		"apiKey"			: "ohNIlmHhxbYpgxTyMhNh7gET9244NfuaiXTAh2dR5lczwiP6cOM17deJgnTCTmWF",
 		"sensorCommand"	: 
 			{
 				"command"	: "ls",
 				"params"	: [ "-l" ],
 				"env"		: ""
 			},
-		"displayName"		: "Wrong deviceId",
+		"displayName"		: "Omega with wrong deviceId",
 		"deviceLocation"		: ""
-	}, {
+	}, 
 
-		"deviceId"			: "ef006c31-1c0e-4603-9120-2f3acf77969a",
+	"xxx06c31-1c0e-4603-9120-2f3acf77969a":	{
+
+		"deviceId"			: "xxx06c31-1c0e-4603-9120-2f3acf77969a",
 		"apiKey"			: "xJMyCgh5lH3oZxTOFleiX14qxtKEEEEEEEEEYedakQm8Q8dqe5LudM8GlLxGL6u0",
 		"sensorCommand"	: 
 			{
@@ -33,7 +36,7 @@
 				"params"	: "-a",
 				"env"		: ""
 			},
-		"displayName"		: "Wrong apiKey",
+		"displayName"		: "Omega with wrong apiKey",
 		"deviceLocation"		: ""
 	}
-]
+}

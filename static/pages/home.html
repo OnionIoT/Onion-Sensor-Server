@@ -13,13 +13,31 @@
 
   </head>
   <body>
-    <h1>Hello, world!</h1>
+    <h1 id="main-title">Omega Cloud Demo</h1>
 
-	<div class="button">Update</div>
+	<div id="omega-list">
+		<ul id="oid">
+			<li class="displayName">asdf</li>
+			<li class="status">404</li>
+		</ul>
+
+		<ul id="oid2">
+			<li class="displayName">asdf</li>
+			<li class="status">404</li>
+		</ul>
+	</div>
+
+
+
+	<button type="button" class="btn btn-primary" id="btn-cloud-update" onclick="updateTemp()">Update</button>
+	<!-- Client-side scripts -->
+	<script src="/js/sensor-client.js"></script>
 
 	<!-- jQuery library -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </body>
+
+
 </html>
