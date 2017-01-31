@@ -1,11 +1,12 @@
 var omegaDataList = {};
+var autoUpdater = setInterval(updateTemp(), 1000);
 var currTempUnit = 'c';
 var statusCodeMessage = 
 {
-	'0'		: 'Temperature: ',
-	'400'	: 'Device error: ',
-	'401'	: 'Device error: ',
-	'404'	: 'Device error: '
+	'0'		: 'ONLINE',
+	'400'	: 'ERROR',
+	'401'	: 'ERROR',
+	'404'	: 'OFFLINE'
 };
 
 var tempUnit = {
@@ -15,43 +16,64 @@ var tempUnit = {
 };
 
 var tempConvert = {
-	'k'	: (t) => { return t + 273.15; },
+	'k'	: (t) => { return (273.15+parseFloat(t)); },
 	'f'	: (t) => { return (t * 1.8 + 32); },
 	'c'	: (t) => { return t; }
 };
 
-function renderOmegaList() {
+function buttonHit()
+{
+	console.log ('update button pressed.');
+	updateTemp();
+}
 
+function setCurrTempUnit (u) 
+{
+	currTempUnit = u; 
+	renderOmegaList();
+}
 
+function renderOmegaList() 
+{
 	omegaDataList.forEach( function (omega) {// TODO check for undefined, don't update it if so, change to use foreach
 		console.log(omega.displayName);
 		console.log(omega.message);
+		console.log(omega.temp);
 		if (omega.displayName != undefined && omega.message != undefined )
 		{
+			description = '0';
 			cardStyle = 'card';
-
-			if(omega.statusCode != 0)
+			if (omega.statusCode == 0 || omega.statusCode == 404)
+			{
+				if (omega.statusCode == 0)
+				{
+					// Data sanitisation is done server-side, this should be 100% float manipulation
+					description = tempConvert[currTempUnit](omega.message);
+					description = description + tempUnit[currTempUnit];
+				} else
+				{	cardStyle += ' card-outline-warning'; }
+			} else
 			{
 				cardStyle += ' card-outline-danger';
 				description = omega.message;
-			} else
-			{
-				// Data sanitisation is done server-side, this should be 100% float manipulation
-				description = tempConvert[currTempUnit](omega.message);
-				description = description + tempUnit[currTempUnit];
 			}
+
+			// Checking for new omega/updating current omega
 			if($('#'+ omega.deviceId).length) 
 			{
 				$('#' + omega.deviceId).attr( { "class" : cardStyle } );
-				$('#' + omega.deviceId + ' h6.card-subtitle').html(omega.statusCode);
+				$('#' + omega.deviceId + ' h6.card-subtitle').html( statusCodeMessage[omega.statusCode] );
 				$('#' + omega.deviceId + ' p.card-text').html(description);
+				$('#' + omega.deviceId + ' div.card-footer').html(omega.time);
 			} else 
 			{
-				appendString =  '<div class="card ' + cardStyle + ' id="' + omega.deviceId + '">';
+				appendString =  '<div class="' + cardStyle + '" id="' + omega.deviceId + '">';
 				appendString += '<div class="card-block">';
 					appendString += '<h4 class="card-title">' + omega.displayName + '</h4>';
 					appendString += '<h6 class="card-subtitle mb-2 text-muted">' + statusCodeMessage[omega.statusCode] + '</h6>';
 					appendString += '<p class="card-text">' + description + '</p>';
+				appendString += '</div>';
+				appendString += '<div class="card-footer text-muted">' + omega.time;
 				appendString += '</div></div>';
 				console.log(appendString);
 				$('#omega-list').append(appendString);
@@ -60,7 +82,8 @@ function renderOmegaList() {
 	});
 }
 
-function updateTemp() {
+function updateTemp()
+{
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
@@ -71,5 +94,3 @@ function updateTemp() {
 	xhttp.open("GET", "/data", true);
 	xhttp.send();
 }
-
-$(document).ready( updateTemp() );

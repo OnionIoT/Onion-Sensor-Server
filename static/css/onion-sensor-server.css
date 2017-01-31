@@ -1,0 +1,24 @@
+.card-footer {
+    font-size: 0.65em;
+}
+
+.card
+{
+	margin-top: 5%;
+}
+
+.container 
+{
+	display: inline-block;
+}
+
+#header-card 
+{
+	border-style: hidden;
+}
+
+footer 
+{
+	font-size: 0.7em;
+	text-align: center;
+}

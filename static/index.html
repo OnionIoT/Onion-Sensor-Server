@@ -5,25 +5,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Onion Cloud Server Demo</title>
+    <title>Omega Cloud Temperature Monitor</title>
     <!-- Bootstrap -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+	<link rel="stylesheet" href="css/onion-sensor-server.css">
 
   </head>
 
   <body>
 	<div class="container">
-		<div class="jumbotron">
-			<h1 id="main-title" class="display-3">Omega Cloud Demo</h1>
-			<p class="lead">Remote code execution for great justice.</p>
-			<hr class="my-4">
-			<p>This app checks and updates the page with data from remote Omega devices.</p>
-			<p class="lead">
-			<button type="button" class="btn btn-primary" id="btn-cloud-update" onclick="updateTemp()">Update Omegas</button>
-			</p>
+		<div id="header-card" class="card">
+			<div class="card-block">
+				<h1 id="page-title" class="card-title">Omega Cloud Temperature Monitor</h1>
+				<p class="card-text">This app uses the Onion Cloud to read temperature from remote devices.</p>
+				<hr class="my-4">
+				<p>It automatically updates once every two minutes, but you can hit the button to make it happen right now!</p>
+				<button type="button" class="btn btn-primary" id="btn-cloud-update" onclick="buttonHit()">Update Temperature</button>
+				<div class="btn-group" role="group" aria-label="Basic example">
+					<button type="button" class="btn btn-secondary" onclick="setCurrTempUnit('k')">Kelvin</button>
+					<button type="button" class="btn btn-secondary" onclick="setCurrTempUnit('f')">Fahrenheit</button>
+					<button type="button" class="btn btn-secondary" onclick="setCurrTempUnit('c')">Celsius</button>
+				</div>
+			</div>
 		</div>
-	</div>
-	<div class="container">
 		<div id="omega-list" class="card-columns">
 
 		</div>
@@ -33,12 +37,25 @@
  	<!-- TODO autoupdate on client end -->
 	<!-- Client-side scripts -->
 	<script src="js/sensor-client.js"></script>
-
-	<!-- jQuery library -->
+	<!-- jQuery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<!-- Latest compiled JavaScript -->
+	<!-- Boostrap.js -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	<!-- Tether.io -->
+	<script src="js/sensor-client.js"></script>
+	
+	<script>
+	var autoupdate;
+	$(document).ready( function() {
+					updateTemp();
+					autoupdate = setInterval ( updateTemp, 120000 );
+					});
+	</script>
+
   </body>
+  <footer>
+	You have the power to remote execute, and you do... <i>what</i> with it?
+  </footer>
 
 
 </html>

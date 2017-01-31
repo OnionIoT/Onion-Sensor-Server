@@ -3,6 +3,7 @@ var express	= require ('express');
 	fs		= require ('fs');
 	https	= require ('https');
 
+
 // Initialise variables for server
 var app		= express();
 
@@ -25,7 +26,7 @@ omegaUpdateResponse.on ('success', (deviceId, data) => {
 
 omegaUpdateResponse.on ('failure', (deviceId, data) => {
 	console.log ('omegaUpdateResponse emit invalid key');
-	updateOmega (deviceId, data.message, data.statusCode);
+	updateOmega (deviceId, 0, data.statusCode);
 });
 
 
@@ -36,8 +37,12 @@ function updateOmega (deviceId, message, statusCode)
 	safeOmegaDataList.forEach (function (omega) {
 		if (omega.deviceId == deviceId) {
 			omega.statusCode = statusCode;
-			omega.message = message;
+			if (statusCode == 0) 	{omega.temp = message; }
+			else 					{omega.message = message; }
+			omega.temp = message;
+			omega.time =  new Date();
 			console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + omega.message);
+			console.log (omega.time);
 			return;
 		}
 	});
@@ -143,5 +148,6 @@ app.listen(port, function () {
 	// Loading the config list once
 	console.log('Example app listening on port ' + port);
 	initOmegaList();
+	omegaTempUpdate();
 	setInterval(function(){	omegaTempUpdate(); }, updateInterval);
 });
