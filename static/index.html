@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Onion Cloud Server Demo</title>
+    <!-- Bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+  </head>
+
+  <body>
+	<div class="container">
+		<div class="jumbotron">
+			<h1 id="main-title" class="display-3">Omega Cloud Demo</h1>
+			<p class="lead">Remote code execution for great justice.</p>
+			<hr class="my-4">
+			<p>This app checks and updates the page with data from remote Omega devices.</p>
+			<p class="lead">
+			<button type="button" class="btn btn-primary" id="btn-cloud-update" onclick="updateTemp()">Update Omegas</button>
+			</p>
+		</div>
+	</div>
+	<div class="container">
+		<div id="omega-list" class="card-columns">
+
+		</div>
+	</div>
+
+
+ 	<!-- TODO autoupdate on client end -->
+	<!-- Client-side scripts -->
+	<script src="js/sensor-client.js"></script>
+
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+  </body>
+
+
+</html>

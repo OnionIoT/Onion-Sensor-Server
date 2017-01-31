@@ -5,7 +5,7 @@
 		"sensorCommand"	: 
 			{
 				"command"	: "echo",
-				"params"	: [ "hello" ]
+				"params"	: [ "25.0" ]
 			},
 		"displayName"		: "Omega with correct data",
 		"deviceLocation"		: ""

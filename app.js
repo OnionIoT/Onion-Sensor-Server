@@ -4,7 +4,7 @@ var express	= require ('express');
 	https	= require ('https');
 
 // Initialise variables for server
-var app					= express();
+var app		= express();
 
 // Initialise variables for api handling
 var onionRestHostname 	= 'api.onion.io';
@@ -19,7 +19,8 @@ const omegaUpdateResponse = new ResponseEmitter ();
 // set up response handlers 
 omegaUpdateResponse.on ('success', (deviceId, data) => {
 	console.log ('omegaUpdateResponse emit temp update');
-	updateOmega (deviceId, data.stdout, data.code);
+	temp = data.stdout.replace('\n','');
+	updateOmega (deviceId, temp, data.code);
 });
 
 omegaUpdateResponse.on ('failure', (deviceId, data) => {
@@ -43,7 +44,16 @@ function updateOmega (deviceId, message, statusCode)
 }
 
 // for future use
-function addOmega (){}
+function addOmega () {}
+function initOmegaList () { 
+	omegaConfigList = JSON.parse (fs.readFileSync (omegaDbFile)); 
+	omegaConfigList.forEach ( function (omegaConfig) {
+		safeOmega = (JSON.parse (JSON.stringify (omegaConfig)));
+		delete safeOmega.apiKey;
+		delete safeOmega.sensorCommand;
+		safeOmegaDataList.push(safeOmega);
+	});
+}
 
 // Constructs an exec request header from a given Omega
 function onionCloudDevRequest (omega, ep) 
@@ -95,23 +105,17 @@ function onionCloudDevRequest (omega, ep)
 // Goes through the list of known Omegas and updates each one
 function omegaTempUpdate()
 {
-	omegaConfigList = JSON.parse (fs.readFileSync (omegaDbFile));
-	safeOmegaDataList = [];
 	console.log (omegaConfigList);
 
 // TODO use funciton mapping instead, swap the object to an array
-	omegaConfigList.forEach(function (omega) {
-		safeOmega = (JSON.parse (JSON.stringify (omega)));
-		delete safeOmega.apiKey;
-		safeOmegaDataList.push (safeOmega);
-
+	omegaConfigList.forEach(function (omegaConfig) {
 		body = JSON.stringify (
 				{ 
-					"command"	: safeOmega.sensorCommand.command,
-					"params"	: safeOmega.sensorCommand.params
+					"command"	: omegaConfig.sensorCommand.command,
+					"params"	: omegaConfig.sensorCommand.params
 				});
-
-		req = onionCloudDevRequest (safeOmega, '/file/exec');
+		// pass in the config, updates the safe list when the call returns
+		req = onionCloudDevRequest (omegaConfig, '/file/exec');
 		console.log(req.getHeader('X-API-KEY'));
 
 		req.write(body);
@@ -128,18 +132,16 @@ function omegaTempUpdate()
 app.use ('/', express.static('static'));
 
 app.get('/data', function (req, res) {
-	res.json(omegaConfigList);
-});
-
-app.get('/', function (req, res) {
-	res.redirect('/pages/home.html');
+	res.json(safeOmegaDataList);
 });
 
 // TODO FIGURE THIS OUT
-var port = process.env.PORT || config.http.port;
+var port = process.env.PORT || 8080;
 var updateInterval = 5000;
 
 app.listen(port, function () {
+	// Loading the config list once
 	console.log('Example app listening on port ' + port);
+	initOmegaList();
 	setInterval(function(){	omegaTempUpdate(); }, updateInterval);
 });
