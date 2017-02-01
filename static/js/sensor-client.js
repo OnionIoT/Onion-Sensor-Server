@@ -47,6 +47,8 @@ function renderOmegaList()
 			{
 				// Data sanitisation is done server-side, this should be 100% float manipulation
 				description = tempConvert[currTempUnit](omega.temp);
+				console.log(description);
+				description = Number(description).toFixed(2);
 				description = description + tempUnit[currTempUnit];
 			} else
 			{	cardStyle += ' card-outline-warning'; }

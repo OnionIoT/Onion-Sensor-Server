@@ -1,26 +1,28 @@
 {
-  "name": "omega-sensor-server",
-  "version": "1.0.0",
-  "description": "Webapp that pulls and displays temperature data from known Omega devices.",
+  "name": "onion-sensor-server",
+  "version": "2.0.0",
+  "description": "Web app that reads sensor data from a remote Omega device and displays it.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start" : "node ./app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OnionIoT/Omega-Cloud-Demo.git"
+    "url": "git+https://github.com/OnionIoT/Onion-Sensor-Server.git"
   },
   "keywords": [
-    "omega"
+    "omega",
+    "onion",
+    "cloud"
   ],
   "author": "James Liu",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/thepiper/Omega-Cloud-Demo/issues"
+    "url": "https://github.com/OnionIoT/Onion-Sensor-Server/issues"
   },
-  "homepage": "https://github.com/thepiper/Omega-Cloud-Demo#readme",
+  "homepage": "https://github.com/OnionIoT/Onion-Sensor-Server#readme",
   "dependencies": {
     "express": "^4.14.1"
-  },
-  "devDependencies": {}
+  }
 }

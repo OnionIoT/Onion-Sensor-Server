@@ -19,29 +19,28 @@ const omegaUpdateResponse = new ResponseEmitter ();
 
 // set up response handlers 
 omegaUpdateResponse.on ('success', (deviceId, data) => {
-	console.log ('omegaUpdateResponse emit temp update');
-	temp = data.stdout.replace('\n','');
-	updateOmega (deviceId, temp, data.code);
+	console.log ('omegaUpdateResponse emit temp update' + data.code);
+	temp = data.stdout.split('\n')[0];
+	updateOmega (deviceId, temp, null, data.code);
 });
 
 omegaUpdateResponse.on ('failure', (deviceId, data) => {
 	console.log ('omegaUpdateResponse emit error ' + data.statusCode);
-	updateOmega (deviceId, data.message, data.statusCode);
+	updateOmega (deviceId, null, data.message, data.statusCode);
 });
 
 
 // Checks for existing omega to update, does nothing if no omega found with given ID
-function updateOmega (deviceId, message, statusCode)
+function updateOmega (deviceId, temp, message, statusCode)
 {
 	// check if existing device
 	safeOmegaDataList.forEach (function (omega) {
 		if (omega.deviceId == deviceId) {
 			omega.statusCode = statusCode;
-			if (statusCode == 0) 	{omega.temp = message; }
-			else 					{omega.message = message; }
-			omega.temp = message;
+			omega.temp = temp;
+			omega.message = message;
 			omega.time =  new Date();
-			console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + omega.message);
+			console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + omega.message + ' ' + omega.temp);
 			return;
 		}
 	});
@@ -113,10 +112,12 @@ function omegaTempUpdate(frontendResponse)
 
 	// Interatively updating omegas
 	omegaConfigList.forEach(function (omegaConfig) {
+		command = omegaConfig.sensorCommand.split(" ");
 		body = JSON.stringify (
 				{ 
-					"command"	: omegaConfig.sensorCommand.command,
-					"params"	: omegaConfig.sensorCommand.params
+					"command"	: command[0],
+					// body.params must be ARRAY!
+					"params"	: command.slice(1)
 				});
 		// pass in the config, updates the safe list when the call returns
 		req = onionCloudDevRequest (omegaConfig, '/file/exec');
@@ -140,9 +141,9 @@ app.get('/data', function (req, res) {
 
 // TODO FIGURE THIS OUT
 var port = process.env.PORT || 8080;
-var updateInterval = 5000;
+var updateInterval = 120000;
 
-app.listen(port, function () {
+app.listen (port, function () {
 	// Loading the config list once
 	console.log('Example app listening on port ' + port);
 	initOmegaList();

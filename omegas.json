@@ -2,11 +2,7 @@
 	{
 		"deviceId"			: "1c0b6906-2740-45af-ae6b-5162404814c7",
 		"apiKey"			: "ohNIlmHhxbYpgxTyMhNh7gET9244NfuaiXTAh2dR5lczwiP6cOM17deJgnTCTmWF",
-		"sensorCommand"	: 
-			{
-				"command"	: "echo",
-				"params"	: [ "25.0" ]
-			},
+		"sensorCommand"		: "python /checktemp.py 0x48",
 		"displayName"		: "Correct data",
 		"deviceLocation"		: ""
 
@@ -15,12 +11,7 @@
 	{
 		"deviceId"			: "696969e7-da1a-45b2-9368-2a943eb1d39a",
 		"apiKey"			: "ohNIlmHhxbYpgxTyMhNh7gET9244NfuaiXTAh2dR5lczwiP6cOM17deJgnTCTmWF",
-		"sensorCommand"	: 
-			{
-				"command"	: "ls",
-				"params"	: [ "-l" ],
-				"env"		: ""
-			},
+		"sensorCommand"		: "python /checktemp.py 0x48",
 		"displayName"		: "Wrong deviceId",
 		"deviceLocation"		: ""
 	}, 
@@ -28,12 +19,7 @@
 	{
 		"deviceId"			: "xxx06c31-1c0e-4603-9120-2f3acf77969a",
 		"apiKey"			: "xJMyCgh5lH3oZxTOFleiX14qxtKEEEEEEEEEYedakQm8Q8dqe5LudM8GlLxGL6u0",
-		"sensorCommand"	: 
-			{
-				"command"	: "ls",
-				"params"	: "-a",
-				"env"		: ""
-			},
+		"sensorCommand"		: "python /checktemp.py 0x48",
 		"displayName"		: "Wrong apiKey",
 		"deviceLocation"		: ""
 	}
