@@ -7,7 +7,7 @@
 				"command"	: "echo",
 				"params"	: [ "25.0" ]
 			},
-		"displayName"		: "Omega with correct data",
+		"displayName"		: "Correct data",
 		"deviceLocation"		: ""
 
 	}, 
@@ -21,7 +21,7 @@
 				"params"	: [ "-l" ],
 				"env"		: ""
 			},
-		"displayName"		: "Omega with wrong deviceId",
+		"displayName"		: "Wrong deviceId",
 		"deviceLocation"		: ""
 	}, 
 
@@ -34,7 +34,7 @@
 				"params"	: "-a",
 				"env"		: ""
 			},
-		"displayName"		: "Omega with wrong apiKey",
+		"displayName"		: "Wrong apiKey",
 		"deviceLocation"		: ""
 	}
 ]

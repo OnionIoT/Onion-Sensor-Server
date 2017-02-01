@@ -25,8 +25,8 @@ omegaUpdateResponse.on ('success', (deviceId, data) => {
 });
 
 omegaUpdateResponse.on ('failure', (deviceId, data) => {
-	console.log ('omegaUpdateResponse emit invalid key');
-	updateOmega (deviceId, 0, data.statusCode);
+	console.log ('omegaUpdateResponse emit error ' + data.statusCode);
+	updateOmega (deviceId, data.message, data.statusCode);
 });
 
 
@@ -42,7 +42,6 @@ function updateOmega (deviceId, message, statusCode)
 			omega.temp = message;
 			omega.time =  new Date();
 			console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + omega.message);
-			console.log (omega.time);
 			return;
 		}
 	});
@@ -108,11 +107,11 @@ function onionCloudDevRequest (omega, ep)
 }
 
 // Goes through the list of known Omegas and updates each one
-function omegaTempUpdate()
+function omegaTempUpdate(frontendResponse)
 {
 	console.log (omegaConfigList);
 
-// TODO use funciton mapping instead, swap the object to an array
+	// Interatively updating omegas
 	omegaConfigList.forEach(function (omegaConfig) {
 		body = JSON.stringify (
 				{ 
@@ -128,16 +127,15 @@ function omegaTempUpdate()
 
 		req.end();
 		console.log('request ended');
+		if (frontendResponse != undefined) { frontendResponse.json(safeOmegaDataList); }
 	});
-	
-	return safeOmegaDataList;
 }
 
 // SERVER SETUP
 app.use ('/', express.static('static'));
 
 app.get('/data', function (req, res) {
-	res.json(safeOmegaDataList);
+	omegaTempUpdate(res);
 });
 
 // TODO FIGURE THIS OUT

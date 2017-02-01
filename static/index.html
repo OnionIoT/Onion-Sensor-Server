@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Omega Cloud Temperature Monitor</title>
     <!-- Bootstrap -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/onion-sensor-server.css">
 
   </head>
@@ -18,9 +18,6 @@
 			<div class="card-block">
 				<h1 id="page-title" class="card-title">Omega Cloud Temperature Monitor</h1>
 				<p class="card-text">This app uses the Onion Cloud to read temperature from remote devices.</p>
-				<hr class="my-4">
-				<p>It automatically updates once every two minutes, but you can hit the button to make it happen right now!</p>
-				<button type="button" class="btn btn-primary" id="btn-cloud-update" onclick="buttonHit()">Update Temperature</button>
 				<div class="btn-group" role="group" aria-label="Basic example">
 					<button type="button" class="btn btn-secondary" onclick="setCurrTempUnit('k')">Kelvin</button>
 					<button type="button" class="btn btn-secondary" onclick="setCurrTempUnit('f')">Fahrenheit</button>
@@ -31,6 +28,13 @@
 		<div id="omega-list" class="card-columns">
 
 		</div>
+		<div id="footer-card" class="card">
+			<div class="card-block">
+				<p>It automatically updates once every two minutes, but you can hit the button to make it happen right now!</p>
+				<button type="button" class="btn btn-primary" id="btn-cloud-update" onclick="buttonHit()">Update Temperature</button>
+			</div>
+		</div>
+
 	</div>
 
 
@@ -40,9 +44,8 @@
 	<!-- jQuery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<!-- Boostrap.js -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 	<!-- Tether.io -->
-	<script src="js/sensor-client.js"></script>
 	
 	<script>
 	var autoupdate;

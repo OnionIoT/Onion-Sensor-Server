@@ -1,24 +1,34 @@
-.card-footer {
-    font-size: 0.65em;
-}
-
 .card
 {
 	margin-top: 5%;
 }
 
-.container 
-{
-	display: inline-block;
+#page-title 
+{ 
+	font-size: 2em;
 }
 
-#header-card 
+.time-text 
+{
+	font-size: 0.6em;
+}
+
+.description 
+{
+	font-size: 1.75em;
+}
+
+#header-card, #footer-card
 {
 	border-style: hidden;
 }
 
+
 footer 
 {
+	margin-top: 6%;
+	margin-bottom: 5px;
 	font-size: 0.7em;
 	text-align: center;
 }
+
