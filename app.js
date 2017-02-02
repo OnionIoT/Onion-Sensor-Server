@@ -34,10 +34,13 @@ function parseAS6200 (stdout)
 {
 	rawTemp = stdout.slice(2,6);
 	bytesTemp = rawTemp.substr(2,2) + rawTemp.substr(0,2);
-	longBinTemp = parseInt(bytesTemp, 16).toString(2);
-	binTemp = longBinTemp.substring(0, longBinTemp.length - 4);
-	intTemp = parseInt (binTemp, 2);
-	temp = intTemp * 0.0625;
+	longBinTemp = parseInt(bytesTemp, 16)
+	binTemp = longBinTemp >> 4;
+	if (binTemp > 1600)
+	{	//dirty bit level math
+		binTemp = binTemp - 4096;
+	}
+	temp = binTemp * 0.0625;
 
 	return temp;
 }
@@ -54,14 +57,22 @@ function updateOmega (deviceId, temp, message, statusCode)
 			omega.message = message;
 			omega.time =  new Date();
 			console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + omega.message + ' ' + omega.temp);
-			return;
+			return true;
 		}
 	});
+
+	return false
 }
 
 // for future use
-function addOmega () {}
-function initOmegaList () { 
+function addOmegaConfig (omegaConfig)
+{
+	omegaConfigList.push(omegaConfig);
+	fs.writeFileSync('omegas.json', omegaConfigList);
+	
+}
+function initOmegaList () 
+{
 	omegaConfigList = JSON.parse (fs.readFileSync (omegaDbFile)); 
 	omegaConfigList.forEach ( function (omegaConfig) {
 		safeOmega = (JSON.parse (JSON.stringify (omegaConfig)));
@@ -157,7 +168,7 @@ app.get('/data', function (req, res) {
 	omegaTempUpdate(res);
 });
 
-// TODO FIGURE THIS OUT
+
 var port = process.env.PORT || 8080;
 var updateInterval = 120000;
 
