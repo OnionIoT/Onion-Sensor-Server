@@ -20,7 +20,8 @@ const omegaUpdateResponse = new ResponseEmitter ();
 // set up response handlers 
 omegaUpdateResponse.on ('success', (deviceId, data) => {
 	console.log ('omegaUpdateResponse emit temp update' + data.code);
-	temp = parseAS6200 (data.stdout);
+//	temp = parseAS6200 (data.stdout);
+	temp = data.stdout.split('\n')[0];
 	updateOmega (deviceId, temp, null, data.code);
 });
 
@@ -165,12 +166,12 @@ function omegaTempUpdate(frontendResponse)
 app.use ('/', express.static('static'));
 
 app.get('/data', function (req, res) {
-	omegaTempUpdate(res);
+	res.json(safeOmegaDataList);
 });
 
 
 var port = process.env.PORT || 8080;
-var updateInterval = 120000;
+var updateInterval = 60000;
 
 app.listen (port, function () {
 	// Loading the config list once
