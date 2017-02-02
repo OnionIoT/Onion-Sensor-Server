@@ -20,7 +20,7 @@ const omegaUpdateResponse = new ResponseEmitter ();
 // set up response handlers 
 omegaUpdateResponse.on ('success', (deviceId, data) => {
 	console.log ('omegaUpdateResponse emit temp update' + data.code);
-	temp = data.stdout.split('\n')[0];
+	temp = parseAS6200 (data.stdout);
 	updateOmega (deviceId, temp, null, data.code);
 });
 
@@ -28,6 +28,19 @@ omegaUpdateResponse.on ('failure', (deviceId, data) => {
 	console.log ('omegaUpdateResponse emit error ' + data.statusCode);
 	updateOmega (deviceId, null, data.message, data.statusCode);
 });
+
+
+function parseAS6200 (stdout)
+{
+	rawTemp = stdout.slice(2,6);
+	bytesTemp = rawTemp.substr(2,2) + rawTemp.substr(0,2);
+	longBinTemp = parseInt(bytesTemp, 16).toString(2);
+	binTemp = longBinTemp.substring(0, longBinTemp.length - 4);
+	intTemp = parseInt (binTemp, 2);
+	temp = intTemp * 0.0625;
+
+	return temp;
+}
 
 
 // Checks for existing omega to update, does nothing if no omega found with given ID
@@ -96,7 +109,8 @@ function onionCloudDevRequest (omega, ep)
 				if (parsedData.code == 0)	
 				{ responseEvent = 'success'; }
 
-				console.log ('response code: ' + parsedData.statusCode + ' | raw: ' + rawData);
+				console.log ('response code: ' + parsedData.statusCode + ' | raw: ' + parsedData);
+				console.log (parsedData);
 				omegaUpdateResponse.emit (responseEvent, omega.deviceId, parsedData);
 
 			});
@@ -128,8 +142,12 @@ function omegaTempUpdate(frontendResponse)
 
 		req.end();
 		console.log('request ended');
-		if (frontendResponse != undefined) { frontendResponse.json(safeOmegaDataList); }
 	});
+
+	if (frontendResponse != undefined) { 
+		frontendResponse.json(safeOmegaDataList); 
+		frontendResponse.end();
+	}
 }
 
 // SERVER SETUP
