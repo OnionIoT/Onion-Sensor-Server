@@ -222,7 +222,7 @@ app.post('/add', function (req, res) {
 });
 
 
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 80;
 var updateInterval = 60000;
 
 app.listen (port, function () {
