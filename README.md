@@ -77,13 +77,13 @@ Minification is currently being worked on, if you'd like to run this live, you s
 
 ## TODOs
 
-* Implement Adding a Device
-  * Use a button modal on the front-end
+* ~~Implement Adding a Device~~
+  * ~~Use a button modal on the front-end~~
   * ~~Use a POST on the back-end~~
   * ~~back-end function needs to be modified to input: deviceId, apiKey, sensorCommand, and displayName~~
-* Front-End
-  * Put the title into a card
-  * Create a big old card to hold all of the device cards
-  * Change to a dark background
-
+* ~~Front-End~~
+  * ~~Put the title into a card~~
+  * ~~Create a big old card to hold all of the device cards~~
+  * ~~Change to a dark background~~
+* Comment server side and front-end js code
 * Handle device response where there is a stderr output

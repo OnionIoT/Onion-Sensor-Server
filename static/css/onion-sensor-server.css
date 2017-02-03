@@ -1,19 +1,27 @@
+body {
+	background-color: #323232;
+}
+
 .card
 {
 	margin-top: 5%;
 }
 
-#page-title 
-{ 
+.card-block {
+	background-color: #ffffff;
+}
+
+#page-title
+{
 	font-size: 2em;
 }
 
-.time-text 
+.time-text
 {
 	font-size: 0.6em;
 }
 
-.description 
+.description
 {
 	font-size: 1.75em;
 }
@@ -24,11 +32,10 @@
 }
 
 
-footer 
+footer
 {
 	margin-top: 6%;
 	margin-bottom: 5px;
 	font-size: 0.7em;
 	text-align: center;
 }
-

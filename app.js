@@ -51,21 +51,35 @@ function parseAS6200 (stdout)
 
 
 // Checks for existing omega to update, does nothing if no omega found with given ID
-function updateOmega (deviceId, temp, message, statusCode)
+function updateOmega (deviceId, temp, message, statusCode, displayName)
 {
-	// check if existing device
-	safeOmegaDataList.forEach (function (omega) {
-		if (omega.deviceId == deviceId) {
-			omega.statusCode = statusCode;
-			omega.temp = temp;
-			omega.message = message;
-			omega.time =  new Date();
-			console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + omega.message + ' ' + omega.temp);
-			return true;
-		}
+	// look for this device in the list
+	var index = safeOmegaDataList.findIndex(function (element) {
+		return element.deviceId === deviceId;
 	});
 
-	return false
+	if (index < 0){
+		// add it to the list
+		var newDevice = {
+			deviceId: deviceId,
+			displayName: displayName,
+			statusCode : statusCode,
+			temp : temp,
+			message : message,
+			time :  new Date()
+		};
+		safeOmegaDataList.push(newDevice);
+
+		console.log ('Adding omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + message + ' ' + temp);
+	} else {
+		// modify an existing array element
+		safeOmegaDataList[index]['statusCode'] = statusCode;
+		safeOmegaDataList[index]['temp'] = temp;
+		safeOmegaDataList[index]['message'] = message;
+		safeOmegaDataList[index]['time'] = new Date();
+
+		console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + message + ' ' + temp);
+	}
 }
 
 // for future use
@@ -79,18 +93,20 @@ function addOmegaConfig (deviceId, apiKey, sensorCommand, displayName, deviceLoc
 		"deviceLocation" : deviceLocation || ''
 	};
 
+	// add it to the master config list
 	omegaConfigList.push(omegaConfig);
 	fs.writeFileSync('omegas.json', JSON.stringify(omegaConfigList, null, 4));
+
+	// add it to the safe list
+	updateOmega (deviceId, 0.0, '', 404, displayName)
 }
 
 function initOmegaList ()
 {
 	omegaConfigList = JSON.parse (fs.readFileSync (omegaDbFile));
+
 	omegaConfigList.forEach ( function (omegaConfig) {
-		safeOmega = (JSON.parse (JSON.stringify (omegaConfig)));
-		delete safeOmega.apiKey;
-		delete safeOmega.sensorCommand;
-		safeOmegaDataList.push(safeOmega);
+		updateOmega(omegaConfig.deviceId, 0.0, '', 400, omegaConfig.displayName);
 	});
 }
 
@@ -177,6 +193,7 @@ function omegaTempUpdate(frontendResponse)
 app.use ('/', express.static('static'));
 
 app.get('/data', function (req, res) {
+	console.log('responding to GET /data with ', safeOmegaDataList);
 	res.json(safeOmegaDataList);
 });
 
@@ -208,6 +225,10 @@ app.post('/add', function (req, res) {
 	} else {
 		// add to the config
 		addOmegaConfig(params.deviceId, params.apiKey, params.sensorCommand, params.displayName, _.get(params, 'deviceLocation', ''));
+
+		// trigger an update
+		omegaTempUpdate();
+
 		// respond with a success message
 		res.json({
 			device: params.deviceId,
@@ -224,7 +245,7 @@ var updateInterval = 60000;
 app.listen (port, function () {
 	// Loading the config list once
 	console.log('Example app listening on port ' + port);
-	initOmegaList();
+	omegaConfigList = JSON.parse (fs.readFileSync (omegaDbFile));
 	omegaTempUpdate();
 	setInterval(function(){	omegaTempUpdate(); }, updateInterval);
 });

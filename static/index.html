@@ -14,6 +14,7 @@
 
   <body>
 	<div class="container">
+    <!-- title card -->
 		<div id="header-card" class="card">
 			<div class="card-block">
 				<h1 id="page-title" class="card-title">Omega Cloud Temperature Monitor</h1>
@@ -25,12 +26,88 @@
 				</div>
 			</div>
 		</div>
+
+    <!-- card of devices being monitored -->
 		<div id="omega-list" class="card-columns">
 
 		</div>
+
+    <!-- add device button -->
+    <div id="footer-card" class="card">
+			<div class="card-block">
+				<p>This monitor is expandable, additional devices can be added at anytime!</p>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDeviceModal">
+          Add your Device!
+        </button>
+			</div>
+		</div>
+
+    <!-- add device modal -->
+    <!-- Modal -->
+    <div class="modal fade" id="addDeviceModal" tabindex="-1" role="dialog" aria-labelledby="addDeviceModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addDeviceModalLabel">Add your Device</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Device details:</p>
+
+            <form>
+              <!-- deviceName form -->
+              <div class="form-group row">
+                <label for="device-name-input" class="col-3 col-form-label">Name</label>
+                <div class="col-9">
+                  <input class="form-control" type="text" value="Artisanal kale" id="device-name-input">
+                  <small id="deviceIdHelp" class="form-text text-muted text-center">The name to display on the monitor.</small>
+                </div>
+              </div>
+
+              <!-- deviceId form -->
+              <div class="form-group row">
+                <label for="device-id-input" class="col-3 col-form-label">Device ID</label>
+                <div class="col-9">
+                  <input class="form-control" type="text" value="" id="device-id-input">
+                  <small id="deviceIdHelp" class="form-text text-muted text-center">The Onion Cloud Device ID of the target device.</small>
+                </div>
+              </div>
+
+              <!-- apiKey form -->
+              <div class="form-group row">
+                <label for="api-key-input" class="col-3 col-form-label">API Key</label>
+                <div class="col-9">
+                  <input class="form-control" type="text" value="" id="api-key-input">
+                  <small id="deviceIdHelp" class="form-text text-muted text-center">The Onion Cloud API Key to access the target device.</small>
+                </div>
+              </div>
+
+              <!-- sensorCommand form -->
+              <div class="form-group">
+                <label for="device-command-input">Device Command</label>
+                <input class="form-control" type="text" value="" id="device-command-input">
+                <small id="deviceIdHelp" class="form-text text-muted text-center">The command to run on the target device to fetch temperature data.</small>
+              </div>
+            </div>
+          </form>
+
+          <!-- add and close buttons -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="addDevice()" id="add-device-button">Add</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- update page -->
 		<div id="footer-card" class="card">
 			<div class="card-block">
-				<p>It automatically updates once every two minutes, but you can hit the button to make it happen right now!</p>
+				<p>This page automatically updates once every two minutes, but you can hit the button to make it happen right now!</p>
 				<button type="button" class="btn btn-primary" id="btn-cloud-update" onclick="buttonHit()">Update Temperature</button>
 			</div>
 		</div>
@@ -46,7 +123,7 @@
 	<!-- Boostrap.js -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 	<!-- Tether.io -->
-	
+
 	<script>
 	var autoupdate;
 	$(document).ready( function() {
