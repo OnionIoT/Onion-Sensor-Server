@@ -14,73 +14,58 @@ app.use(bodyParser.json());
 var onionRestHostname 	= 'api.onion.io';
 	omegaDbFile = 'omegas.json';
 	omegaConfigList = [];
-	safeOmegaDataList = [];
 
 const EventEmitter = require('events');
 class ResponseEmitter extends EventEmitter {}
 const omegaUpdateResponse = new ResponseEmitter ();
 
 // set up response handlers
+// FUTURE TODO: merge these two handlers
 omegaUpdateResponse.on ('success', (deviceId, data) => {
-	console.log ('omegaUpdateResponse emit temp update' + data.code);
+
 //	temp = parseAS6200 (data.stdout);
-	temp = data.stdout.split('\n')[0];
-	updateOmega (deviceId, temp, null, data.code);
-});
+	var temp = data.stdout.split('\n')[0];
+	var code = data.code;
+	var message = null;
 
-omegaUpdateResponse.on ('failure', (deviceId, data) => {
-	console.log ('omegaUpdateResponse emit error ' + data.statusCode);
-	updateOmega (deviceId, null, data.message, data.statusCode);
-});
+	console.log ('omegaUpdateResponse emit temp update' + code);
 
-
-function parseAS6200 (stdout)
-{
-	rawTemp = stdout.slice(2,6);
-	bytesTemp = rawTemp.substr(2,2) + rawTemp.substr(0,2);
-	longBinTemp = parseInt(bytesTemp, 16)
-	binTemp = longBinTemp >> 4;
-	if (binTemp > 1600)
-	{	//dirty bit level math
-		binTemp = binTemp - 4096;
-	}
-	temp = binTemp * 0.0625;
-
-	return temp;
-}
-
-
-// Checks for existing omega to update, does nothing if no omega found with given ID
-function updateOmega (deviceId, temp, message, statusCode, displayName)
-{
-	// look for this device in the list
-	var index = safeOmegaDataList.findIndex(function (element) {
+	var index = omegaConfigList.findIndex(function (element) {
 		return element.deviceId === deviceId;
 	});
 
-	if (index < 0){
-		// add it to the list
-		var newDevice = {
-			deviceId: deviceId,
-			displayName: displayName,
-			statusCode : statusCode,
-			temp : temp,
-			message : message,
-			time :  new Date()
-		};
-		safeOmegaDataList.push(newDevice);
+	if (index >= 0) {
+		omegaConfigList[index]['statusCode'] = code;
+		omegaConfigList[index]['temp'] = temp;
+		omegaConfigList[index]['message'] = message;
+		omegaConfigList[index]['time'] = new Date();
 
-		console.log ('Adding omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + message + ' ' + temp);
-	} else {
-		// modify an existing array element
-		safeOmegaDataList[index]['statusCode'] = statusCode;
-		safeOmegaDataList[index]['temp'] = temp;
-		safeOmegaDataList[index]['message'] = message;
-		safeOmegaDataList[index]['time'] = new Date();
-
-		console.log ('Updating omega with ID: ' + deviceId + '| Code ' + statusCode + ': ' + message + ' ' + temp);
+		console.log ('Updating omega with ID: ' + deviceId + '| Code ' + code + ': ' + message + ' ' + temp);
 	}
-}
+
+});
+
+omegaUpdateResponse.on ('failure', (deviceId, data) => {
+	var temp = 0.0;
+	var code = data.statusCode;
+	var message = data.message;
+
+	console.log ('omegaUpdateResponse emit error ' + code);
+
+
+	var index = omegaConfigList.findIndex(function (element) {
+		return element.deviceId === deviceId;
+	});
+
+	if (index >= 0) {
+		omegaConfigList[index]['statusCode'] = code;
+		omegaConfigList[index]['temp'] = temp;
+		omegaConfigList[index]['message'] = message;
+		omegaConfigList[index]['time'] = new Date();
+
+		console.log ('Updating omega with ID: ' + deviceId + '| Code ' + code + ': ' + message + ' ' + temp);
+	}
+});
 
 // for future use
 function addOmegaConfig (deviceId, apiKey, sensorCommand, displayName, deviceLocation)
@@ -96,18 +81,6 @@ function addOmegaConfig (deviceId, apiKey, sensorCommand, displayName, deviceLoc
 	// add it to the master config list
 	omegaConfigList.push(omegaConfig);
 	fs.writeFileSync('omegas.json', JSON.stringify(omegaConfigList, null, 4));
-
-	// add it to the safe list
-	updateOmega (deviceId, 0.0, '', 404, displayName)
-}
-
-function initOmegaList ()
-{
-	omegaConfigList = JSON.parse (fs.readFileSync (omegaDbFile));
-
-	omegaConfigList.forEach ( function (omegaConfig) {
-		updateOmega(omegaConfig.deviceId, 0.0, '', 400, omegaConfig.displayName);
-	});
 }
 
 // Constructs an exec request header from a given Omega
@@ -159,7 +132,7 @@ function onionCloudDevRequest (omega, ep)
 }
 
 // Goes through the list of known Omegas and updates each one
-function omegaTempUpdate(frontendResponse)
+function omegaTempUpdate()
 {
 	console.log (omegaConfigList);
 
@@ -182,19 +155,29 @@ function omegaTempUpdate(frontendResponse)
 		req.end();
 		console.log('request ended');
 	});
-
-	if (frontendResponse != undefined) {
-		frontendResponse.json(safeOmegaDataList);
-		frontendResponse.end();
-	}
 }
 
 // SERVER SETUP
 app.use ('/', express.static('static'));
 
 app.get('/data', function (req, res) {
-	console.log('responding to GET /data with ', safeOmegaDataList);
-	res.json(safeOmegaDataList);
+	var fullResponse = [];
+
+	omegaConfigList.forEach(function (device) {
+		var deviceResponse = {
+			displayName: device.displayName,
+			deviceId: device.deviceId,
+			statusCode: device.statusCode,
+			temp: device.temp,
+			message: device.message,
+			time: device.time
+		};
+
+		fullResponse.push(deviceResponse);
+	})
+
+	console.log('responding to GET /data with ', fullResponse);
+	res.json(fullResponse);
 });
 
 app.post('/add', function (req, res) {
