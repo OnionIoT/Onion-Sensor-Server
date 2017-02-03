@@ -2,6 +2,7 @@
 var express	= require ('express');
 	fs		= require ('fs');
 	https	= require ('https');
+	_			= require ('lodash');
 
 
 // Initialise variables for server
@@ -17,7 +18,7 @@ const EventEmitter = require('events');
 class ResponseEmitter extends EventEmitter {}
 const omegaUpdateResponse = new ResponseEmitter ();
 
-// set up response handlers 
+// set up response handlers
 omegaUpdateResponse.on ('success', (deviceId, data) => {
 	console.log ('omegaUpdateResponse emit temp update' + data.code);
 //	temp = parseAS6200 (data.stdout);
@@ -70,11 +71,12 @@ function addOmegaConfig (omegaConfig)
 {
 	omegaConfigList.push(omegaConfig);
 	fs.writeFileSync('omegas.json', omegaConfigList);
-	
+
 }
-function initOmegaList () 
+
+function initOmegaList ()
 {
-	omegaConfigList = JSON.parse (fs.readFileSync (omegaDbFile)); 
+	omegaConfigList = JSON.parse (fs.readFileSync (omegaDbFile));
 	omegaConfigList.forEach ( function (omegaConfig) {
 		safeOmega = (JSON.parse (JSON.stringify (omegaConfig)));
 		delete safeOmega.apiKey;
@@ -84,15 +86,15 @@ function initOmegaList ()
 }
 
 // Constructs an exec request header from a given Omega
-function onionCloudDevRequest (omega, ep) 
+function onionCloudDevRequest (omega, ep)
 {
 	endpoint = '/v1/devices/' + omega.deviceId + ep;
-	options = 
+	options =
 	{
 		hostname: onionRestHostname,
 		path	: endpoint,
 		method	: 'POST',
-		headers	: 
+		headers	:
 		{
 			"X-API-KEY"	: omega.apiKey,
 		}
@@ -106,19 +108,19 @@ function onionCloudDevRequest (omega, ep)
 			res.on ('data', (chunk) => rawData += chunk);
 			res.on ('end', () => {
 				console.log ('response ended ' + omega.deviceId);
-				
+
 				let parsedData = {};
-				
+
 				try			{ parsedData = JSON.parse(rawData);	}
-				catch (e)	{ 
-					console.log ('Unable to parse rawData: ' + e.message); 
+				catch (e)	{
+					console.log ('Unable to parse rawData: ' + e.message);
 					parsedData.message = 'Cloud response unreadable: ' + e.message;
 					parsedData.statusCode = -1;
 				}
-				
+
 				let responseEvent = 'failure';
-				
-				if (parsedData.code == 0)	
+
+				if (parsedData.code == 0)
 				{ responseEvent = 'success'; }
 
 				console.log ('response code: ' + parsedData.statusCode + ' | raw: ' + parsedData);
@@ -140,7 +142,7 @@ function omegaTempUpdate(frontendResponse)
 	omegaConfigList.forEach(function (omegaConfig) {
 		command = omegaConfig.sensorCommand.split(" ");
 		body = JSON.stringify (
-				{ 
+				{
 					"command"	: command[0],
 					// body.params must be ARRAY!
 					"params"	: command.slice(1)
@@ -156,8 +158,8 @@ function omegaTempUpdate(frontendResponse)
 		console.log('request ended');
 	});
 
-	if (frontendResponse != undefined) { 
-		frontendResponse.json(safeOmegaDataList); 
+	if (frontendResponse != undefined) {
+		frontendResponse.json(safeOmegaDataList);
 		frontendResponse.end();
 	}
 }
@@ -167,6 +169,27 @@ app.use ('/', express.static('static'));
 
 app.get('/data', function (req, res) {
 	res.json(safeOmegaDataList);
+});
+
+app.post('/add', function (req, res) {
+	var params = req.body;
+
+	// ensure all required parameters are in the request
+	if (_.has(params, 'deviceId') && _.has(params, 'apiKey') && _.has(params, 'sensorCommand') && _.has(displayName, 'deviceId') ) {
+		// add to the config
+		addOmegaConfig(params.deviceId, params.apiKey, params.sensorCommand, params.displayName, _.get(params, 'deviceLocation', ''));
+		// respond with a success message
+		res.json({
+			device: params.deviceId,
+			status: 'success'
+		});
+	} else {
+		// respond with an error message
+		res.status(400).json({
+			error: 'Missing parameter'
+		});
+	}
+
 });
 
 
