@@ -3,10 +3,12 @@ var express	= require ('express');
 	fs		= require ('fs');
 	https	= require ('https');
 	_			= require ('lodash');
+	bodyParser 	= require('body-parser');
 
 
 // Initialise variables for server
 var app		= express();
+app.use(bodyParser.json());
 
 // Initialise variables for api handling
 var onionRestHostname 	= 'api.onion.io';
@@ -180,20 +182,36 @@ app.get('/data', function (req, res) {
 
 app.post('/add', function (req, res) {
 	var params = req.body;
+	console.log('received POST to /add, req.body is ', req.body);
 
 	// ensure all required parameters are in the request
-	if (_.has(params, 'deviceId') && _.has(params, 'apiKey') && _.has(params, 'sensorCommand') && _.has(displayName, 'deviceId') ) {
+	if (!_.has(params, 'deviceId')) {
+		// respond with an error message
+		res.status(400).json({
+			error: 'Missing deviceId parameter'
+		});
+	} else if (!_.has(params, 'apiKey')) {
+		// respond with an error message
+		res.status(400).json({
+			error: 'Missing apiKey parameter'
+		});
+	} else if (!_.has(params, 'sensorCommand')) {
+		// respond with an error message
+		res.status(400).json({
+			error: 'Missing sensorCommand parameter'
+		});
+	} else if (!_.has(params, 'displayName')) {
+		// respond with an error message
+		res.status(400).json({
+			error: 'Missing displayName parameter'
+		});
+	} else {
 		// add to the config
 		addOmegaConfig(params.deviceId, params.apiKey, params.sensorCommand, params.displayName, _.get(params, 'deviceLocation', ''));
 		// respond with a success message
 		res.json({
 			device: params.deviceId,
 			status: 'success'
-		});
-	} else {
-		// respond with an error message
-		res.status(400).json({
-			error: 'Missing parameter'
 		});
 	}
 
