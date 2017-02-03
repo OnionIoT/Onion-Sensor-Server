@@ -87,3 +87,5 @@ Minification is currently being worked on, if you'd like to run this live, you s
   * ~~Change to a dark background~~
 * Comment server side and front-end js code
 * Handle device response where there is a stderr output
+* Change modal forms if text is Missing
+* Fix issue where newly added device is undefined
