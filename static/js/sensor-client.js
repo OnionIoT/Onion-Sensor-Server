@@ -145,6 +145,10 @@ var addDevice = function () {
 	    dataType: "json",
 	    success: function (msg) {
 	       console.log('POST /add returned: ', msg);
+				 // update the devices
+				 setTimeout(updateTemp(), 3000);
+
+				 // hide the modal
 				 $('#addDeviceModal').modal('hide');
 	    },
 	    error: function (msg) {
