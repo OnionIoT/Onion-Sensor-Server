@@ -66,10 +66,18 @@ function updateOmega (deviceId, temp, message, statusCode)
 }
 
 // for future use
-function addOmegaConfig (omegaConfig)
+function addOmegaConfig (deviceId, apiKey, sensorCommand, displayName, deviceLocation)
 {
+	omegaConfig = {
+		"deviceId" : deviceId,
+		"apiKey" : apiKey,
+		"sensorCommand" : sensorCommand,
+		"displayName" : displayName,
+		"deviceLocation" : deviceLocation
+	};
+
 	omegaConfigList.push(omegaConfig);
-	fs.writeFileSync('omegas.json', omegaConfigList);
+	fs.writeFileSync('omegas.json', JSON.stringify(omegaConfigList, null, 4));
 	
 }
 function initOmegaList () 
