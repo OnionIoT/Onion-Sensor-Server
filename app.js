@@ -16,7 +16,7 @@ var app		= express();
 app.use(bodyParser.json());
 
 // Initialise device storage variables
-var	deviceDbFile = 'omegas.json';
+var	deviceDbFile = 'devices.json';
 	deviceList = [];
 
 // Starting the server
@@ -61,7 +61,7 @@ app.get('/data', function (req, res) {
 	res.json(fullResponse);
 });
 
-/** POST endpoint, accepts a single device and adds it to the omegas.json file
+/** POST endpoint, accepts a single device and adds it to the devices.json file
  *
  * ~~~ Required body fields
  * "deviceId", 
@@ -134,7 +134,7 @@ function addDeviceConfig (deviceId, apiKey, sensorCommand, displayName, deviceLo
 
 	// Add it to the master config list and writes to file THIS IS BLOCKING!
 	deviceList.push(deviceConfig);
-	fs.writeFileSync('omegas.json', JSON.stringify(deviceList, null, 4));
+	fs.writeFileSync('devices.json', JSON.stringify(deviceList, null, 4));
 }
 
 // Constructs an exec request header from a given Omega

@@ -4,6 +4,7 @@
         "apiKey": "ohNIlmHhxbYpgxTyMhNh7gET9244NfuaiXTAh2dR5lczwiP6cOM17deJgnTCTmWF",
         "sensorCommand": "python /root/checkTemp.py 0x48",
         "displayName": "Onion Toronto HQ",
-        "deviceLocation": ""
+        "deviceLocation": "",
+		"writeable": false
     }
 ]
