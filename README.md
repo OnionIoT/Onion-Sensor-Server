@@ -86,11 +86,11 @@ Minification is currently being worked on, if you'd like to run this live, you s
   * ~~Create a big old card to hold all of the device cards~~
   * ~~Change to a dark background~~
 * Comment server side and front-end js code
-* Handle device response where there is a stderr output
-* On the 'Add Device' modal, if required text is missing:
-  * Change how the modal forms look (should be red or something)
-  * Add a message saying 'All fields are required' or something along those lines
-* Fix issue where newly added device shows undefined for the data
+* ~~Handle device response where there is a stderr output~~
+* ~~On the 'Add Device' modal, if required text is missing:~~
+  * ~~Change how the modal forms look (should be red or something)~~
+  * ~~Add a message saying 'All fields are required' or something along those lines~~
+* ~~Fix issue where newly added device shows undefined for the data~~
 * Add option to delete devices through the front-end
   * Back-End:
     * Add a `writeable` option to the config file, if it is set to `false`, the device cannot be deleted

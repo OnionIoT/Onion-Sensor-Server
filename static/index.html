@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Omega Cloud Temperature Monitor</title>
-    <!-- Bootstrap -->
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<title>Omega Cloud Temperature Monitor</title>
+		<!-- Bootstrap -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/onion-sensor-server.css">
 
-  </head>
+	</head>
 
-  <body>
+	<body>
 	<div class="container">
-    <!-- title card -->
+		<!-- title card -->
 		<div id="header-card" class="card">
 			<div class="card-block">
 				<h1 id="page-title" class="card-title">Omega Cloud Temperature Monitor</h1>
@@ -27,84 +27,84 @@
 			</div>
 		</div>
 
-    <!-- card of devices being monitored -->
+		<!-- card of devices being monitored -->
 		<div id="omega-list" class="card-columns">
 
 		</div>
 
-    <!-- add device button -->
-    <div id="footer-card" class="card">
+		<!-- add device button -->
+		<div id="footer-card" class="card">
 			<div class="card-block">
 				<p>This monitor is expandable, additional devices can be added at anytime!</p>
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDeviceModal">
-          Add your Device!
-        </button>
+				<!-- Button trigger modal -->
+				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDeviceModal">
+					Add your Device!
+				</button>
 			</div>
 		</div>
 
-    <!-- add device modal -->
-    <!-- Modal -->
-    <div class="modal fade" id="addDeviceModal" tabindex="-1" role="dialog" aria-labelledby="addDeviceModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addDeviceModalLabel">Add your Device</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Device details:</p>
+		<!-- add device form modal -->
+		<!-- Modal -->
+		<div class="modal fade" id="addDeviceModal" tabindex="-1" role="dialog" aria-labelledby="addDeviceModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addDeviceModalLabel">Add your Device</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Device details:</p>
 
-            <form>
-              <!-- deviceName form -->
-              <div class="form-group row">
-                <label for="device-name-input" class="col-3 col-form-label">Name</label>
-                <div class="col-9">
-                  <input class="form-control" type="text" value="Artisanal kale" id="device-name-input">
-                  <small id="deviceIdHelp" class="form-text text-muted text-center">The name to display on the monitor.</small>
-                </div>
-              </div>
+						<form>
+							<!-- deviceName form -->
+							<div class="form-group row" id="device-name-form">
+								<label for="device-name-input" class="col-3 col-form-label">Name</label>
+								<div class="col-9">
+									<input class="form-control form-control-danger" type="text" value="" id="device-name-input">
+									<small id="deviceIdHelp" class="form-text text-muted text-center">The name to display on the monitor.</small>
+								</div>
+							</div>
 
-              <!-- deviceId form -->
-              <div class="form-group row">
-                <label for="device-id-input" class="col-3 col-form-label">Device ID</label>
-                <div class="col-9">
-                  <input class="form-control" type="text" value="" id="device-id-input">
-                  <small id="deviceIdHelp" class="form-text text-muted text-center">The Onion Cloud Device ID of the target device.</small>
-                </div>
-              </div>
+							<!-- deviceId form -->
+							<div class="form-group row" id="device-id-form">
+								<label for="device-id-input" class="col-3 col-form-label">Device ID</label>
+								<div class="col-9">
+									<input class="form-control form-control-danger" type="text" value="" id="device-id-input">
+									<small id="deviceIdHelp" class="form-text text-muted text-center">The Onion Cloud Device ID of the target device.</small>
+								</div>
+							</div>
 
-              <!-- apiKey form -->
-              <div class="form-group row">
-                <label for="api-key-input" class="col-3 col-form-label">API Key</label>
-                <div class="col-9">
-                  <input class="form-control" type="text" value="" id="api-key-input">
-                  <small id="deviceIdHelp" class="form-text text-muted text-center">The Onion Cloud API Key to access the target device.</small>
-                </div>
-              </div>
+							<!-- apiKey form -->
+							<div class="form-group row" id="api-key-form">
+								<label for="api-key-input" class="col-3 col-form-label">API Key</label>
+								<div class="col-9">
+									<input class="form-control form-control-danger" type="text" value="" id="api-key-input">
+									<small id="deviceIdHelp" class="form-text text-muted text-center">The Onion Cloud API Key to access the target device.</small>
+								</div>
+							</div>
 
-              <!-- sensorCommand form -->
-              <div class="form-group">
-                <label for="device-command-input">Device Command</label>
-                <input class="form-control" type="text" value="" id="device-command-input">
-                <small id="deviceIdHelp" class="form-text text-muted text-center">The command to run on the target device to fetch temperature data.</small>
-              </div>
-            </div>
-          </form>
+							<!-- sensorCommand form -->
+							<div class="form-group" id="device-command-form">
+								<label for="device-command-input">Device Command</label>
+								<input class="form-control form-control-danger" type="text" value="" id="device-command-input">
+								<small id="deviceIdHelp" class="form-text text-muted text-center">The command to run on the target device to fetch temperature data.</small>
+							</div>
+						</div>
+					</form>
 
-          <!-- add and close buttons -->
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="addDevice()" id="add-device-button">Add</button>
-          </div>
+					<!-- add and close buttons -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" onclick="addDevice()" id="add-device-button">Add</button>
+					</div>
 
-        </div>
-      </div>
-    </div>
+				</div>
+			</div>
+		</div>
 
-    <!-- update page -->
+		<!-- update page -->
 		<div id="footer-card" class="card">
 			<div class="card-block">
 				<p>This page automatically updates once every two minutes, but you can hit the button to make it happen right now!</p>
@@ -132,10 +132,10 @@
 					});
 	</script>
 
-  </body>
-  <footer>
+	</body>
+	<footer>
 	You have the power to remote execute, and you do... <i>what</i> with it?
-  </footer>
+	</footer>
 
 
 </html>

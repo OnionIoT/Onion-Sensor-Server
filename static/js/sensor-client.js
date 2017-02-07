@@ -1,7 +1,6 @@
-var omegaDataList = {};
-var autoUpdater = setInterval(updateTemp(), 1000);
-var currTempUnit = 'c';
-var statusCodeMessage =
+// Initialising client-side variables
+var deviceDataList = {};
+var statusCodeMessage =		// Maps status codes to statuses in english
 {
 	'0'		: 'ONLINE',
 	'400'	: 'ERROR',
@@ -9,76 +8,97 @@ var statusCodeMessage =
 	'404'	: 'OFFLINE'
 };
 
+/** Temperature conversion functions
+ * curreTempUnit - flag to coordinate conversion and appending units
+ * tempUnit - hash table of flag:written_unit, the written unit will be appended to the number
+ * tempConvert - hash table of flag:conversionFunction(), always converts *from* Celsius to F/K
+ */
+var currTempUnit = 'c';
+// Maps the flag to the proper written unit
 var tempUnit = {
 	'k'	: ' K',
 	'f'	: ' °F',
 	'c'	: ' °C'
 };
-
+// Maps the flag to the related conversion function (from celsius)
 var tempConvert = {
 	'k'	: (t) => { return (273.15+parseFloat(t)); },
 	'f'	: (t) => { return (t * 1.8 + 32); },
 	'c'	: (t) => { return t; }
 };
 
+// onclick handler for the unit selection buttons, sets the flag, and renders the cards again
+function setCurrTempUnit (u)
+{
+	currTempUnit = u;
+	renderDeviceList();
+}
+
+// Alias for updateTemp(), adds console logging to track for debugging
+// TODO up for deletion
 function buttonHit()
 {
 	console.log ('update button pressed.');
 	updateTemp();
 }
 
-function setCurrTempUnit (u)
+/** Render function, only updates #omega-list
+ * Generates HTML elements for each device in the device list
+ * then appends them as children to #omega-list
+ */
+function renderDeviceList()
 {
-	currTempUnit = u;
-	renderOmegaList();
-}
+	// Iterates through the List of devices and builds an HTML block for each one
+	deviceDataList.forEach( function (device) {// TODO check for undefined, don't update it if so, change to use foreach
 
-function renderOmegaList()
-{
-	omegaDataList.forEach( function (omega) {// TODO check for undefined, don't update it if so, change to use foreach
-
-		time = Date(omega.time).toLocaleString();
-
+		// parses time data to string
+		time = Date(device.time).toLocaleString();
+		// Initialises description to empty description is used for both
+		// temperature and error message display
 		description = '0';
+		// Initialises card styling class to change based on device status
 		cardStyle = 'card';
-		if (omega.statusCode == 0 || omega.statusCode == 404)
+
+		// Checking the device status to assign appropriate messages/data to description
+		if (device.statusCode == 0 || device.statusCode == 404)
 		{
-			if (omega.statusCode == 0)
+			if (device.statusCode == 0) // Converts data to appropriate unit
 			{
 				// Data sanitisation is done server-side, this should be 100% float manipulation
-				description = tempConvert[currTempUnit](omega.temp);
+				description = tempConvert[currTempUnit](device.temp);
 				console.log(description);
 				description = Number(description).toFixed(2);
 				description = description + tempUnit[currTempUnit];
-			} else
+			} else // Sets card to warning for 404s
 			{	cardStyle += ' card-outline-warning'; }
-		} else
+		} else // Sets card to danger for all other statuses, also outputs error message instead of temperature
 		{
 			cardStyle += ' card-outline-danger';
-			description = omega.message;
+			description = device.message;
 		}
-
-		console.log(omega.displayName + ' - ' +
-					omega.statusCode + ' @' +
+		
+		// Some debug logging
+		console.log(device.displayName + ' - ' +
+					device.statusCode + ' @' +
 					time + ' | ' +
 					description);
 
-		// Checking for new omega/updating current omega
-		if($('#'+ omega.deviceId).length)
-		{
-			$('#' + omega.deviceId).attr( { "class" : cardStyle } );
-			$('#' + omega.deviceId + ' h6.card-subtitle')	.html( statusCodeMessage[omega.statusCode] );
-			$('#' + omega.deviceId + ' p.card-text')		.html( description);
-			$('#' + omega.deviceId + ' div.card-footer')	.html( time);
+		// Checking for new device/updating current device
+		if($('#'+ device.deviceId).length == 1)
+		{ // If card already exists for device, simply change the data
+			$('#' + device.deviceId).attr( { "class" : cardStyle } );
+			$('#' + device.deviceId + ' h6.card-subtitle')	.html( statusCodeMessage[device.statusCode] );
+			$('#' + device.deviceId + ' p.card-text')		.html( description);
+			$('#' + device.deviceId + ' div.card-footer')	.html( time);
 		} else
-		{
-			appendString =  '<div class="' + cardStyle + '" id="' + omega.deviceId + '">';
+		{ // If not, brute-force generates an html block from data, this avoids calling jQ - maybe faster (not benchmarked)
+			appendString =  '<div class="' + cardStyle + '" id="' + device.deviceId + '">';
 			appendString += '<div class="card-block">';
-				appendString += '<h4 class="card-title">' 						+ omega.displayName + '</h4>';
-				appendString += '<h6 class="card-subtitle mb-2 text-muted">' 	+ statusCodeMessage[omega.statusCode] + '</h6>';
+				appendString += '<h4 class="card-title">' 						+ device.displayName + '</h4>';
+				appendString += '<h6 class="card-subtitle mb-2 text-muted">' 	+ statusCodeMessage[device.statusCode] + '</h6>';
 				appendString += '<p class="card-text description">' 						+ description + '</p>';
 			appendString += '</div>';
-			appendString += '<div class="time-text card-footer text-muted">' 				+ omega.time;
+			appendString += '<div class="time-text card-footer text-muted">' 				+ device.time;
 			appendString += '</div></div>';
 			console.log(appendString);
 			$('#omega-list').append(appendString);
@@ -86,13 +106,14 @@ function renderOmegaList()
 	}); // forEach ends here
 }
 
+// Constructs HTML request to GET /data from the app server
 function updateTemp()
 {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-			omegaDataList = JSON.parse(this.responseText);
-			renderOmegaList();
+			deviceDataList = JSON.parse(this.responseText);
+			renderDeviceList();
 		}
 	};
 	xhttp.open("GET", "/data", true);
@@ -104,56 +125,79 @@ var addDevice = function () {
 	console.log("Add Device button clicked!");
 
 	var bValid 			= true;
-	var deviceName 	= $('#device-name-input').val();
+	var deviceName 		= $('#device-name-input').val();
 	var deviceId 		= $('#device-id-input').val();
 	var apiKey 			= $('#api-key-input').val();
 	var command 		= $('#device-command-input').val();
 
 	// validate input
-	if (deviceName === "") {
-		$('#device-name-input').addClass("form-control-danger");
-		bValid = false;
-	}
-	if (deviceId === "") {
-		$('#device-id-input').addClass("form-control-danger");
-		bValid = false;
-	}
-	if (apiKey === "") {
-		$('#api-key-input').addClass("form-control-danger");
-		bValid = false;
-	}
-	if (command === "") {
-		$('#device-command-input').addClass("form-control-danger");
-		bValid = false;
-	}
+	bValid = checkEmpty('device-name');
+	t = checkEmpty('device-id');
+	bValid = bValid && t;
+	t = checkEmpty('api-key');
+	bValid = bValid && t;
+	t = checkEmpty('device-command');
+	bValid = bValid && t;
 
-	// run the http request
+	// run the http request if everything goes through
 	if (bValid) {
+		// bodybuilding with given data from the form
 		var body = {
-        deviceId: deviceId,
-        apiKey: apiKey,
-				sensorCommand: command,
-				displayName: deviceName
-    };
+			deviceId		: deviceId,
+			apiKey			: apiKey,
+			sensorCommand	: command,
+			displayName		: deviceName
+		};
+
 		console.log("Sending POST with body: ", body);
+		// ajax post request to /devices with all data
+		$.ajax( {
+			type: "POST",
+			url: "/devices",
+			data: JSON.stringify(body),
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (msg) {
+					console.log('POST /add returned: ', msg);
 
-		$.ajax({
-	    type: "POST",
-	    url: "/add",
-	    data: JSON.stringify(body),
-	    contentType: "application/json; charset=utf-8",
-	    dataType: "json",
-	    success: function (msg) {
-	       console.log('POST /add returned: ', msg);
-				 // update the devices
-				 setTimeout(updateTemp(), 3000);
+					// hide the modal
+					$('#addDeviceModal').modal('hide');
 
-				 // hide the modal
-				 $('#addDeviceModal').modal('hide');
-	    },
-	    error: function (msg) {
-				console.log('POST /add returned ERROR: ', msg);
-	    }
+					// update the devices
+					setTimeout( function() {
+						updateTemp();
+					}, 5000);
+				},
+			error: function (msg) {
+					console.log('POST /add returned ERROR: ', msg);
+				}
 		});
 	}
 };
+
+// Checks a given form field for empty string input, updates an alert if it's empty, removes it if there is data
+function checkEmpty(formId)
+{
+	// Inits the selector for the form groups
+	var selector 	= '#' + formId + '-form';
+	// generates a default 'required field' error html element from raw html string
+	var errorHTML	= $.parseHTML('<div class="form-control-feedback col-12 text-center">This field is required.</div>');
+	// presets validitiy of the form input
+	let bValid 		= true;
+	
+	// Checks if the input is actually valid
+	if ( $('#' + formId + '-input').val() === "") { // If not, adds warnings
+		$(selector).addClass("has-danger");
+		if ($(selector + '.form-control-feedback').length == 0) { // prevents adding the error string multiple times
+			// TODO this doesn't always work!
+			$(selector).append(errorHTML);
+		}
+		bValid = false;
+	} else { // removes added warnings if input is valid
+		$(selector).removeClass("has-danger");
+		$(selector + '.form-control-feedback').remove();
+	}
+	
+
+	return bValid;
+}
