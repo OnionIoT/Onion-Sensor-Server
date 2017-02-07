@@ -8,93 +8,53 @@ var express	= require ('express');
 
 // Initialise variables for server
 var app		= express();
+	onionCloudHostname 	= 'api.onion.io';
+
 app.use(bodyParser.json());
 
 // Initialise variables for api handling
-var onionRestHostname 	= 'api.onion.io';
-	omegaDbFile = 'omegas.json';
-	omegaConfigList = [];
+var	deviceDbFile = 'devices.json';
+	deviceList = [];
 
-const EventEmitter = require('events');
-class ResponseEmitter extends EventEmitter {}
-const omegaUpdateResponse = new ResponseEmitter ();
+function updateDevice (index, code, temp, message)
+{
+		deviceList[index]['statusCode'] = code;
+		deviceList[index]['temp'] = temp;
+		deviceList[index]['message'] = message;
+		deviceList[index]['time'] = new Date();
 
-// set up response handlers
-// FUTURE TODO: merge these two handlers
-omegaUpdateResponse.on ('success', (deviceId, data) => {
-
-//	temp = parseAS6200 (data.stdout);
-	var temp = data.stdout.split('\n')[0];
-	var code = data.code;
-	var message = null;
-
-	console.log ('omegaUpdateResponse emit temp update' + code);
-
-	var index = omegaConfigList.findIndex(function (element) {
-		return element.deviceId === deviceId;
-	});
-
-	if (index >= 0) {
-		omegaConfigList[index]['statusCode'] = code;
-		omegaConfigList[index]['temp'] = temp;
-		omegaConfigList[index]['message'] = message;
-		omegaConfigList[index]['time'] = new Date();
-
-		console.log ('Updating omega with ID: ' + deviceId + '| Code ' + code + ': ' + message + ' ' + temp);
-	}
-
-});
-
-omegaUpdateResponse.on ('failure', (deviceId, data) => {
-	var temp = 0.0;
-	var code = data.statusCode;
-	var message = data.message;
-
-	console.log ('omegaUpdateResponse emit error ' + code);
-
-
-	var index = omegaConfigList.findIndex(function (element) {
-		return element.deviceId === deviceId;
-	});
-
-	if (index >= 0) {
-		omegaConfigList[index]['statusCode'] = code;
-		omegaConfigList[index]['temp'] = temp;
-		omegaConfigList[index]['message'] = message;
-		omegaConfigList[index]['time'] = new Date();
-
-		console.log ('Updating omega with ID: ' + deviceId + '| Code ' + code + ': ' + message + ' ' + temp);
-	}
-});
+		console.log ('Updating device with ID: ' + deviceList[index].deviceId + '| Code ' + code + ': ' + message + ' ' + temp);
+}
 
 // for future use
 function addOmegaConfig (deviceId, apiKey, sensorCommand, displayName, deviceLocation)
 {
-	omegaConfig = {
-		"deviceId" : deviceId,
-		"apiKey" : apiKey,
-		"sensorCommand" : sensorCommand,
-		"displayName" : displayName,
-		"deviceLocation" : deviceLocation || ''
+	deviceConfig = {
+		"deviceId" 			: deviceId,
+		"apiKey" 			: apiKey,
+		"sensorCommand" 	: sensorCommand,
+		"displayName" 		: displayName,
+		"deviceLocation" 	: deviceLocation || '',
+		"writable"			: false
 	};
 
 	// add it to the master config list
-	omegaConfigList.push(omegaConfig);
-	fs.writeFileSync('omegas.json', JSON.stringify(omegaConfigList, null, 4));
+	deviceList.push(deviceConfig);
+	fs.writeFileSync('devices.json', JSON.stringify(deviceList, null, 4));
 }
 
 // Constructs an exec request header from a given Omega
-function onionCloudDevRequest (omega, ep)
+function onionCloudDevRequest (device, ep)
 {
-	endpoint = '/v1/devices/' + omega.deviceId + ep;
+	endpoint = '/v1/devices/' + device.deviceId + ep;
 	options =
 	{
-		hostname: onionRestHostname,
+		hostname: onionCloudHostname,
 		path	: endpoint,
 		method	: 'POST',
 		headers	:
 		{
-			"X-API-KEY"	: omega.apiKey,
+			"X-API-KEY"	: device.apiKey,
 		}
 	};
 
@@ -105,7 +65,7 @@ function onionCloudDevRequest (omega, ep)
 
 			res.on ('data', (chunk) => rawData += chunk);
 			res.on ('end', () => {
-				console.log ('response ended ' + omega.deviceId);
+				console.log ('response ended ' + device.deviceId);
 
 				let parsedData = {};
 
@@ -116,15 +76,34 @@ function onionCloudDevRequest (omega, ep)
 					parsedData.statusCode = -1;
 				}
 
-				let responseEvent = 'failure';
 
-				if (parsedData.code == 0)
-				{ responseEvent = 'success'; }
+				if (_.has(parsedData, 'statusCode')) { 				// Case for cloud service returns error
+					var code 	= parsedData.statusCode;
+					var temp 	= 0.0;
+					var message = parsedData.message;
+					console.log ('Response returned http error ' + code);
+				} else if (_.has(parsedData, 'stderr')) { 			// Case for device returns some error
+					var code 	= parsedData.code;
+					var temp 	= 0.0;
+					var message = "Device command returned error";
+					console.log ('Response returned device error ' + code);
+				} else if (_.has(parsedData, 'stdout')) { 			// Case of successful data return
+					var code 	= parsedData.code;
+					var temp 	= parsedData.stdout.split('\n')[0];
+					var message = "Device command returned success";
+					console.log ('Response returned success ' + code);
+				} else { 											// See log comment below
+					console.log('Something very strange happened with the cloud response data.');
+					return;
+				}
 
-				console.log ('response code: ' + parsedData.statusCode + ' | raw: ' + parsedData);
-				console.log (parsedData);
-				omegaUpdateResponse.emit (responseEvent, omega.deviceId, parsedData);
 
+				var index = deviceList.findIndex(function (element) {
+					return element.deviceId === device.deviceId;
+				});
+
+				updateDevice(index, code, temp, message);
+				console.log ('response code: ' + parsedData.statusCode + ' | raw: ' + rawData); 
 			});
 		}).on ('error', (e) => {
 			console.log('request ERROR ' + e.message);
@@ -132,13 +111,13 @@ function onionCloudDevRequest (omega, ep)
 }
 
 // Goes through the list of known Omegas and updates each one
-function omegaTempUpdate()
+function deviceTempUpdate()
 {
-	console.log (omegaConfigList);
+	console.log (deviceList);
 
-	// Interatively updating omegas
-	omegaConfigList.forEach(function (omegaConfig) {
-		command = omegaConfig.sensorCommand.split(" ");
+	// Interatively updating devices
+	deviceList.forEach(function (deviceConfig) {
+		command = deviceConfig.sensorCommand.split(" ");
 		body = JSON.stringify (
 				{
 					"command"	: command[0],
@@ -146,7 +125,7 @@ function omegaTempUpdate()
 					"params"	: command.slice(1)
 				});
 		// pass in the config, updates the safe list when the call returns
-		req = onionCloudDevRequest (omegaConfig, '/file/exec');
+		req = onionCloudDevRequest (deviceConfig, '/file/exec');
 		console.log(req.getHeader('X-API-KEY'));
 
 		req.write(body);
@@ -163,7 +142,7 @@ app.use ('/', express.static('static'));
 app.get('/data', function (req, res) {
 	var fullResponse = [];
 
-	omegaConfigList.forEach(function (device) {
+	deviceList.forEach(function (device) {
 		var deviceResponse = {
 			displayName: device.displayName,
 			deviceId: device.deviceId,
@@ -210,7 +189,7 @@ app.post('/add', function (req, res) {
 		addOmegaConfig(params.deviceId, params.apiKey, params.sensorCommand, params.displayName, _.get(params, 'deviceLocation', ''));
 
 		// trigger an update
-		omegaTempUpdate();
+		deviceTempUpdate();
 
 		// respond with a success message
 		res.json({
@@ -222,13 +201,13 @@ app.post('/add', function (req, res) {
 });
 
 
-var port = process.env.PORT || 80;
+var port = process.env.PORT || 8080;
 var updateInterval = 60000;
 
 app.listen (port, function () {
 	// Loading the config list once
 	console.log('Example app listening on port ' + port);
-	omegaConfigList = JSON.parse (fs.readFileSync (omegaDbFile));
-	omegaTempUpdate();
-	setInterval(function(){	omegaTempUpdate(); }, updateInterval);
+	deviceList = JSON.parse (fs.readFileSync (deviceDbFile));
+	deviceTempUpdate();
+	setInterval(function(){	deviceTempUpdate(); }, updateInterval);
 });
