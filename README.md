@@ -91,19 +91,19 @@ Minification is currently being worked on, if you'd like to run this live, you s
   * ~~Add a message saying 'All fields are required' or something along those lines~~
 * ~~Fix issue where newly added device shows undefined for the data~~
 * Add option to delete devices through the front-end
-  * ~~Back-End:
-    * Add a `writeable` option to the config file, if it is set to `false`, the device cannot be deleted
-      * Note that not all devices need to have this flag, assume writeable is true if not present
-    * Add a `DELETE /device` endpoint 
-      * (with DELETE being the type of HTTP request, should be very similar to a POST request) 
-      * Purpose: remove the device from memory as well as the config file on the server
-      * If the target device has a `writeable: false` setting, do NOT delete the device!
-      * The target device is to specified by the `deviceId` from the request body
-      * Use [array].findIndex function to find which device should be removed
-    * Add a `writeable: false` setting to the Onion HQ device~~
-  * Front-End \*:
-    * change delete button to X, when it's clicked, trigger the DELETE /device endpoint with the deviceId as the body
-  * ~~Code-Clean-up:
-    * Change the `POST /add` end-point to `POST /device` on the front-end and back-end~~
-* Comment server side and front-end js code
+  * ~~Back-End:~~
+    * ~~Add a `writeable` option to the config file, if it is set to `false`, the device cannot be deleted~~
+      * ~~Note that not all devices need to have this flag, assume writeable is true if not present~~
+    * ~~Add a `DELETE /device` endpoint ~~
+      * ~~(with DELETE being the type of HTTP request, should be very similar to a POST request) ~~
+      * ~~Purpose: remove the device from memory as well as the config file on the server~~
+      * ~~If the target device has a `writeable: false` setting, do NOT delete the device!~~
+      * ~~The target device is to specified by the `deviceId` from the request body~~
+      * ~~Use [array].findIndex function to find which device should be removed~~
+    * ~~Add a `writeable: false` setting to the Onion HQ device~~
+  * ~~Front-End \*:~~
+    * ~~change delete button to X, when it's clicked, trigger the DELETE /device endpoint with the deviceId as the body~~
+  * ~~Code-Clean-up:~~
+    * ~~Change the `POST /add` end-point to `POST /device` on the front-end and back-end~~
+* ~~Comment server side and front-end js code~~
   
