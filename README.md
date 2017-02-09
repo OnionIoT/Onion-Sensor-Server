@@ -85,14 +85,13 @@ Minification is currently being worked on, if you'd like to run this live, you s
   * ~~Put the title into a card~~
   * ~~Create a big old card to hold all of the device cards~~
   * ~~Change to a dark background~~
-* Comment server side and front-end js code
 * ~~Handle device response where there is a stderr output~~
 * ~~On the 'Add Device' modal, if required text is missing:~~
   * ~~Change how the modal forms look (should be red or something)~~
   * ~~Add a message saying 'All fields are required' or something along those lines~~
 * ~~Fix issue where newly added device shows undefined for the data~~
 * Add option to delete devices through the front-end
-  * Back-End:
+  * ~~Back-End:
     * Add a `writeable` option to the config file, if it is set to `false`, the device cannot be deleted
       * Note that not all devices need to have this flag, assume writeable is true if not present
     * Add a `DELETE /device` endpoint 
@@ -101,9 +100,10 @@ Minification is currently being worked on, if you'd like to run this live, you s
       * If the target device has a `writeable: false` setting, do NOT delete the device!
       * The target device is to specified by the `deviceId` from the request body
       * Use [array].findIndex function to find which device should be removed
-    * Add a `writeable: false` setting to the Onion HQ device
-  * Front-End:
-    * Add a 'X' to the top of each device card, when it's clicked, trigger the DELETE /device endpoint with the deviceId as the body
-  * Code-Clean-up:
-    * Change the `POST /add` end-point to `POST /device` on the front-end and back-end
+    * Add a `writeable: false` setting to the Onion HQ device~~
+  * Front-End \*:
+    * change delete button to X, when it's clicked, trigger the DELETE /device endpoint with the deviceId as the body
+  * ~~Code-Clean-up:
+    * Change the `POST /add` end-point to `POST /device` on the front-end and back-end~~
+* Comment server side and front-end js code
   
