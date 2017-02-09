@@ -7,20 +7,8 @@
         "deviceLocation": "",
         "writable": false,
         "statusCode": 0,
-        "temp": "26.1875",
+        "temp": "27.2500",
         "message": "Success!",
-        "time": "2017-02-09T22:09:57.837Z"
-    },    
-    {
-        "deviceId": "9cbbdd08-8c44-4c42-8f49-e93588e11a78",
-        "apiKey": "ohNIlmHhxbYpgxTyMhNh7gET9244NfuaiXTAh2dR5lczwiP6cOM17deJgnTCTmWF",
-        "sensorCommand": "sh /root/checkAS6200Temp.sh",
-        "displayName": "Onion Toronto HQ",
-        "deviceLocation": "",
-        "statusCode": 0,
-        "temp": "26.1875",
-        "message": "Success!",
-        "time": "2017-02-09T22:09:57.837Z"
+        "time": "2017-02-09T23:21:40.544Z"
     }
-
 ]
