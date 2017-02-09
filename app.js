@@ -51,7 +51,8 @@ app.get('/data', function (req, res) {
 			statusCode: device.statusCode,
 			temp: device.temp,
 			message: device.message,
-			time: device.time
+			time: device.time,
+			writable:device.writable
 		};
 
 		fullResponse.push(deviceResponse);
@@ -100,10 +101,54 @@ app.post('/devices', function (req, res) {
 		deviceTempUpdate();
 
 		// respond with a success message and the ID of added device
-		res.json({
+		res.status(201).json({
 			device: params.deviceId,
 			status: 'success'
 		});
+	}
+
+});
+
+/** DELETE /devices endpoint
+ * deletes the device from deviceList selected by deviceId
+ * returns:
+ * 400 - missing deviceId
+ * 200 - delete successful
+ *
+ */ // TODO too many arguments check for all endpoints
+app.delete('/devices/:deviceId', function (req, res) {
+	var params = req.params;
+	console.log('received DELETE to /devices, req.body is ', req.params);
+
+	if (!_.has(params, 'deviceId')) {
+		res.status(400).json({
+			'body'	: params,
+			status	: 'Missing deviceId'
+		});
+	} else
+	{
+		var index = deviceList.findIndex(function (element) {
+			return element.deviceId === params.deviceId;
+		});
+
+		if (index == -1) {
+			res.status(200).json({
+				'body'	: params,
+				status	: 'Delete successful'
+			});
+		} else if (deviceList[index].writable == false) { 
+			res.status(403).json({
+				'body'	: params,
+				status	: 'Device is not removeable'
+			});
+		} else {
+			deviceList.splice(index, 1);
+			fs.writeFileSync('devices.json', JSON.stringify(deviceList, null, 4));
+			res.status(200).json({
+				'body'	: params,
+				status	: 'Delete successful'
+			});
+		}
 	}
 
 });
@@ -176,25 +221,34 @@ function onionCloudDevRequest (device, ep)
 				}
 
 
+				var code;
+				var temp;
+				var message;
 				// Checks a bunch of conditions for the response,
 				// appropriately determines the way the device data (temperature, message, etc.)
 				// If successfully updated (code == 0), returns temp, code 0, success message
 				// Else keeps original temperature and returns appropriate code and error message given
 				if (_.has(parsedData, 'statusCode')) { 				// Case for cloud service returns error, returns the error message
-					var code 	= parsedData.statusCode;
-					var temp 	= device.temp;
-					var message = parsedData.message;
+					code 	= parsedData.statusCode;
+					temp 	= device.temp;
+					message = parsedData.message;
 					console.log ('Response returned http error ' + code);
 				} else if (_.has(parsedData, 'stderr')) { 			// Case for device returns some error, returns the stderr as message
-					var code 	= parsedData.code;
-					var temp 	= device.temp;
-					var message = parsedData.stderr;
+					code 	= parsedData.code;
+					temp 	= device.temp;
+					message = parsedData.stderr;
 					console.log ('Response returned device error ' + code);
 				} else if (_.has(parsedData, 'stdout')) { 			// Case of successful data return
-					var code 	= parsedData.code;
-					var temp 	= parsedData.stdout.split('\n')[0];
-					var message = "Device command returned success";
-					console.log ('Response returned success ' + code);
+					code 	= parsedData.code;
+					temp 	= parsedData.stdout.split('\n')[0];
+						// if the returned data isn't a number, sets code to 1
+						// this alerts client to display message instead of temp
+						if ((!isNaN(parseFloat(temp)) && isFinite(temp)) == false) { 
+							code = '1';
+						}
+
+					message = "Success!";
+					console.log ('Response returned success ' + code + temp);
 				} else { 											// See log comment below
 					console.log('Something very strange happened with the cloud response data.');
 					return;
@@ -207,7 +261,7 @@ function onionCloudDevRequest (device, ep)
 				
 				// Calls an update
 				updateDevice(index, code, temp, message);
-				console.log ('response code: ' + parsedData.statusCode + ' | raw: ' + rawData); 
+				console.log ('response code: ' + code + ' | raw: ' + rawData); 
 			});
 		}).on ('error', (e) => {
 			console.log('request ERROR ' + e.message);
