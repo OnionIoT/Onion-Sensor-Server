@@ -52,7 +52,7 @@ app.get('/data', function (req, res) {
 			temp: device.temp,
 			message: device.message,
 			time: device.time,
-			writable:device.writable
+			writable:_.get(device, 'writable', true)
 		};
 
 		fullResponse.push(deviceResponse);
@@ -120,37 +120,40 @@ app.delete('/devices/:deviceId', function (req, res) {
 	var params = req.params;
 	console.log('received DELETE to /devices, req.body is ', req.params);
 
-	if (!_.has(params, 'deviceId')) {
-		res.status(400).json({
-			'body'	: params,
-			status	: 'Missing deviceId'
-		});
-	} else
+	// Checks the request uri for deviceId
+	if (_.has(params, 'deviceId')) 
 	{
 		var index = deviceList.findIndex(function (element) {
 			return element.deviceId === params.deviceId;
 		});
 
-		if (index == -1) {
-			res.status(200).json({
+		if (index >= 0) { // Found device
+			if (_.get(deviceList[index], 'writable', true) === true) { 
+				// if device is writable, delete it
+				deviceList.splice(index, 1);
+				fs.writeFileSync('devices.json', JSON.stringify(deviceList, null, 4));
+				res.status(200).json({
+					'body'	: params,
+					status	: 'Delete successful'
+				});
+			} else { // device is not writable, do not delete, respond with error
+				res.status(403).json({
+					'body'	: params,
+					status	: 'Device is not removeable'
+				});
+			}
+		} else { //If device does not exist in server lists, respond  not found
+			res.status(404).json({
 				'body'	: params,
-				status	: 'Delete successful'
-			});
-		} else if (deviceList[index].writable == false) { 
-			res.status(403).json({
-				'body'	: params,
-				status	: 'Device is not removeable'
-			});
-		} else {
-			deviceList.splice(index, 1);
-			fs.writeFileSync('devices.json', JSON.stringify(deviceList, null, 4));
-			res.status(200).json({
-				'body'	: params,
-				status	: 'Delete successful'
+				status	: 'Device not found'
 			});
 		}
+	} else { // if there is no device id in request, respond with error
+		res.status(400).json({
+			'body'	: params,
+			status	: 'Missing deviceId'
+		});
 	}
-
 });
 
 

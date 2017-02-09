@@ -143,12 +143,12 @@ function renderDeviceList()
 			block.append(statusText);
 			block.append(descriPara);
 
-			if (device.writable) {
+			if (device.writable === true) {
 				deleteButton = document.createElement('button');
-				deleteButton.setAttribute('class', 'btn');
+				deleteButton.setAttribute('class', 'btn btn-sm delete-button');
 				deleteButton.setAttribute('type', 'button');
 				deleteButton.setAttribute('onclick', 'deleteDevice(\'' + device.deviceId + '\')');
-				deleteButton.textContent = 'Delete';
+				deleteButton.textContent = 'X';
 				block.append(deleteButton);
 			}
 
