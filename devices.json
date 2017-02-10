@@ -1,14 +1,9 @@
 [
     {
-        "deviceId": "1c0b6906-2740-45af-ae6b-5162404814c7",
-        "apiKey": "ohNIlmHhxbYpgxTyMhNh7gET9244NfuaiXTAh2dR5lczwiP6cOM17deJgnTCTmWF",
-        "sensorCommand": "sh /root/checkAS6200Temp.sh",
-        "displayName": "Onion Toronto HQ",
-        "deviceLocation": "",
-        "writable": false,
-        "statusCode": 0,
-        "temp": "27.2500",
-        "message": "Success!",
-        "time": "2017-02-09T23:21:40.544Z"
+        "deviceId": "your-device-id",
+        "apiKey": "your-api-key",
+        "sensorCommand": "echo Hello!",
+        "displayName": "",
+        "deviceLocation": ""
     }
 ]
