@@ -24,7 +24,7 @@
       * ~~The target device is to specified by the `deviceId` from the request body~~
       * ~~Use [array].findIndex function to find which device should be removed~~
     * ~~Add a `writeable: false` setting to the Onion HQ device~~
-  * ~~Front-End \*:~~
+  * ~~Front-End:~~
     * ~~Add a delete button to each card, when it's clicked, trigger the DELETE /device endpoint with the deviceId as the body~~
     * ~~Change delete button text to just be an 'X', position it nicely in the card~~
   * ~~Code-Clean-up:~~
@@ -33,4 +33,6 @@
 * UI Fixes:
   * When a device is added or deleted, have a spinning gear/loading icon so the user knows their command was successful and that they just need to wait
   * When a device is successfully added, clear the content (and any error formatting) of the form in the 'Add Device' modal
-
+* Code Fixes:
+  * Use a variable instead of the raw 'devices.json' string
+  * Add ability for a run-time argument to specify the configuration file
