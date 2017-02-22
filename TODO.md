@@ -30,6 +30,8 @@
   * ~~Code-Clean-up:~~
     * ~~Change the `POST /add` end-point to `POST /device` on the front-end and back-end~~
 * ~~Comment server side and front-end js code~~
+* Adding a Device:
+  * Should check with the Onion Cloud if device ID and API Key are valid before adding the device
 * UI Fixes:
   * When a device is added or deleted, have a spinning gear/loading icon so the user knows their command was successful and that they just need to wait
   * When a device is successfully added, clear the content (and any error formatting) of the form in the 'Add Device' modal
